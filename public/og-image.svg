@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="background" x1="104" y1="45" x2="1090" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff7ed"/>
+      <stop offset="1" stop-color="#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="icon" x1="110" y1="110" x2="390" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fb923c"/>
+      <stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#c2410c" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <circle cx="1080" cy="72" r="180" fill="#fdba74" opacity=".22"/>
+  <circle cx="1090" cy="580" r="260" fill="#fb923c" opacity=".12"/>
+  <rect x="90" y="105" width="300" height="300" rx="78" fill="url(#icon)" filter="url(#shadow)"/>
+  <circle cx="240" cy="260" r="80" fill="#fff7ed"/>
+  <circle cx="240" cy="260" r="51" fill="none" stroke="#fdba74" stroke-width="10"/>
+  <path d="M152 174v62m-22-62v35a22 22 0 0 0 44 0v-35m-22 62v98" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M328 174c-22 13-33 38-33 65v22h33m0-87v160" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="455" y="242" fill="#9a3412" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="34" font-weight="700" letter-spacing="2">우리 팀 점심 고민 해결</text>
+  <text x="450" y="330" fill="#431407" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="76" font-weight="800">메뉴솔로몬</text>
+  <text x="455" y="395" fill="#9a3412" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="30">식당을 모으고, 함께 투표하고, 맛있는 기록을 남겨요.</text>
+  <rect x="455" y="445" width="156" height="48" rx="24" fill="#fff" opacity=".9"/>
+  <text x="533" y="477" text-anchor="middle" fill="#c2410c" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700">식당 모으기</text>
+  <rect x="627" y="445" width="156" height="48" rx="24" fill="#fff" opacity=".9"/>
+  <text x="705" y="477" text-anchor="middle" fill="#c2410c" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700">점심 투표</text>
+  <rect x="799" y="445" width="156" height="48" rx="24" fill="#fff" opacity=".9"/>
+  <text x="877" y="477" text-anchor="middle" fill="#c2410c" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700">히스토리</text>
+</svg>

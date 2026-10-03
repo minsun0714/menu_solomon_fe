@@ -1,6 +1,7 @@
 import type { CandidateSource, ConfirmationType, VoteStatus } from '@/types/vote'
 
 export const DEFAULT_VOTE_DURATION_HOURS = 3
+export const MAX_VOTE_NAME_LENGTH = 40
 
 export const VOTE_STATUS = {
   OPEN: 'OPEN',
@@ -35,4 +36,4 @@ export const CANDIDATE_SOURCE_LABEL = {
 } satisfies Record<CandidateSource, string>
 
 export const RECOMMENDATION_EXCLUDE_DAYS = 7
-export const RECOMMENDATION_LIMIT = 3
+export const RECOMMENDATION_LIMIT = 1

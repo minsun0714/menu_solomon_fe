@@ -18,3 +18,16 @@ export function useAddCandidateMutation(sessionId: string, teamId: string) {
     successMessage: TOAST_MESSAGES.CANDIDATE_ADDED,
   })
 }
+
+export function useDeleteCandidateMutation(sessionId: string, teamId: string) {
+  return useAppMutation({
+    mutationFn: (candidateId: string) => voteService.deleteCandidate(sessionId, candidateId),
+    invalidateKeys: () => [
+      queryKeys.vote.candidates(sessionId),
+      queryKeys.vote.results(sessionId),
+      queryKeys.vote.recommended(sessionId),
+      queryKeys.vote.sessions(teamId),
+    ],
+    successMessage: TOAST_MESSAGES.CANDIDATE_DELETED,
+  })
+}

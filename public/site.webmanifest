@@ -1,0 +1,18 @@
+{
+  "name": "메뉴솔로몬",
+  "short_name": "메뉴솔로몬",
+  "description": "우리 팀 점심 메뉴를 함께 정하는 가장 쉬운 방법",
+  "lang": "ko",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

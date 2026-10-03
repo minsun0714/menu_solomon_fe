@@ -12,5 +12,5 @@ export function useLunchHistory(teamId: string) {
   const monthly = useMonthlyHistoryQuery(teamId, toMonthKey(today), !isWeekly)
   const { data: entries = [], isLoading, isError } = isWeekly ? weekly : monthly
 
-  return { period, setPeriod, entries, isLoading, isError }
+  return { period, setPeriod, entries, referenceDate: today, isLoading, isError }
 }

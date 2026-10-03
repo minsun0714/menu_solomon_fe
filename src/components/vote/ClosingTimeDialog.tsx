@@ -14,7 +14,6 @@ type ClosingTimeDialogProps = {
   submitLabel: string
   initialClosesAt: string | (() => string)
   isSubmitting: boolean
-  guard?: (action: () => void) => void
   onSubmit: (closesAt: string, onDone: () => void) => void
 }
 
@@ -25,7 +24,6 @@ export function ClosingTimeDialog({
   submitLabel,
   initialClosesAt,
   isSubmitting,
-  guard = (action) => action(),
   onSubmit,
 }: ClosingTimeDialogProps) {
   const [open, setOpen] = useState(false)
@@ -43,7 +41,7 @@ export function ClosingTimeDialog({
 
   return (
     <>
-      <span className="contents" onClick={() => guard(() => handleOpenChange(true))}>
+      <span className="contents" onClick={() => handleOpenChange(true)}>
         {trigger}
       </span>
       <Dialog open={open} onOpenChange={handleOpenChange}>

@@ -4,29 +4,30 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorState } from '@/components/common/ErrorState'
+import { BackLink } from '@/components/common/BackLink'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { MemberAvatarGroup } from '@/components/team/MemberAvatarGroup'
 import { ROUTES } from '@/constants/routes'
 import { TEAM_ROLE, TEAM_ROLE_LABEL } from '@/constants/team'
-import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { useTeamPreview } from '@/hooks/team/useTeamPreview'
 
 export function TeamInvitationPage() {
-  const { inviteToken = '' } = useParams()
+  const { inviteCode = '' } = useParams()
   const navigate = useNavigate()
-  const { requireAuth } = useRequireAuth()
-  const { preview, isLoading, isError, isJoining, isAlreadyMember, joinTeam } = useTeamPreview(inviteToken)
+  const { preview, isLoading, isError, isJoining, isAlreadyMember, joinTeam } = useTeamPreview(inviteCode)
 
-  const handleJoin = () => requireAuth(() => joinTeam((teamId) => navigate(ROUTES.TEAM_DETAIL(teamId))))
+  const handleJoin = () => joinTeam((teamId) => navigate(ROUTES.TEAM_DETAIL(teamId)))
   const handleOpenTeam = () => preview && navigate(ROUTES.TEAM_DETAIL(preview.id))
 
-  if (isLoading) return <Skeleton className="mx-auto h-72 max-w-2xl" />
-  if (isError || !preview) return <ErrorState message="유효하지 않은 초대 링크입니다." />
+  if (isLoading) return <div className="mx-auto max-w-2xl space-y-6"><BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink><Skeleton className="h-72" /></div>
+  if (isError || !preview) return <div className="mx-auto max-w-2xl space-y-6"><BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink><ErrorState message="유효하지 않은 초대 코드입니다." /></div>
 
   const { name, description, memberCount, members } = preview
 
   return (
-    <Card className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl space-y-6">
+      <BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink>
+      <Card>
       <CardHeader className="items-center text-center">
         <p className="text-sm text-primary">팀에 초대받았어요</p>
         <CardTitle className="text-2xl">{name}</CardTitle>
@@ -51,6 +52,7 @@ export function TeamInvitationPage() {
           <Button className="w-full" disabled={isJoining} onClick={handleJoin}>{isJoining ? '참여 중...' : '팀 참여하기'}</Button>
         )}
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   )
 }

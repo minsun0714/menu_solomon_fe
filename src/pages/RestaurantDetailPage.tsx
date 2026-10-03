@@ -1,6 +1,7 @@
-import { ArrowLeft, MapPin } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { MapPin } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { BackLink } from '@/components/common/BackLink'
 import { ErrorState } from '@/components/common/ErrorState'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { Rating } from '@/components/common/Rating'
@@ -15,16 +16,16 @@ export function RestaurantDetailPage() {
     isLoading, isError, isSaving, isDeleting, createOrUpdateReview, deleteReview,
   } = useRestaurantDetail(teamId, teamRestaurantId)
 
-  if (isLoading) return <ListSkeleton count={3} />
-  if (isError || !restaurant) return <ErrorState message="식당을 찾을 수 없습니다." />
+  const teamRestaurantPath = `${ROUTES.TEAM_DETAIL(teamId)}?tab=${TEAM_TAB.RESTAURANTS}`
+
+  if (isLoading) return <div className="space-y-6"><BackLink to={teamRestaurantPath}>팀으로 가기</BackLink><ListSkeleton count={3} /></div>
+  if (isError || !restaurant) return <div className="space-y-6"><BackLink to={teamRestaurantPath}>팀으로 가기</BackLink><ErrorState message="식당을 찾을 수 없습니다." /></div>
 
   const { name, category, address } = restaurant.restaurant
 
   return (
     <div className="space-y-6">
-      <Link to={`${ROUTES.TEAM_DETAIL(teamId)}?tab=${TEAM_TAB.RESTAURANTS}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> 팀으로 돌아가기
-      </Link>
+      <BackLink to={teamRestaurantPath}>팀으로 가기</BackLink>
       <section className="space-y-2 rounded-xl border bg-card p-6">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold">{name}</h1>

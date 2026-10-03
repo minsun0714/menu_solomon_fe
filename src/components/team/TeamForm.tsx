@@ -26,11 +26,15 @@ export function TeamForm({ initialValue, submitLabel, isSubmitting, onSubmit }: 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="team-name">팀 이름</Label>
-        <Input id="team-name" value={name} maxLength={MAX_TEAM_NAME_LENGTH} placeholder="예: 플랫폼개발팀" onChange={(e) => setName(e.target.value)} />
+        <Label htmlFor="team-name">
+          팀 이름 <span className="text-destructive" aria-hidden="true">*</span>
+        </Label>
+        <Input id="team-name" required value={name} maxLength={MAX_TEAM_NAME_LENGTH} placeholder="예: 플랫폼개발팀" onChange={(e) => setName(e.target.value)} />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="team-description">팀 소개</Label>
+        <Label htmlFor="team-description">
+          팀 소개 <span className="font-normal text-muted-foreground">(선택)</span>
+        </Label>
         <Textarea id="team-description" value={description} maxLength={MAX_TEAM_DESCRIPTION_LENGTH} placeholder="팀을 간단히 소개해 주세요." onChange={(e) => setDescription(e.target.value)} />
       </div>
       <Button type="submit" disabled={!isValid || isSubmitting}>

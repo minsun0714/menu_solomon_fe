@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Plus, Sparkles } from 'lucide-react'
+import { Plus, RefreshCw, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Rating } from '@/components/common/Rating'
-import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { useCandidateManagement } from '@/hooks/vote/useCandidateManagement'
 import type { CandidateDetail } from '@/types/vote'
 
@@ -17,10 +16,12 @@ type CandidateManagementProps = {
 }
 
 export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: CandidateManagementProps) {
-  const { requireAuth } = useRequireAuth()
   const [open, setOpen] = useState(false)
-  const { keyword, setKeyword, recommended, searchResults, isAdding, addCandidate, addRecommended } =
-    useCandidateManagement(teamId, sessionId, canAdd)
+  const [showRecommendations, setShowRecommendations] = useState(false)
+  const {
+    keyword, setKeyword, recommended, searchResults, isRecommendedLoading, isRecommendedFetching,
+    isAdding, refreshRecommendations, addCandidate, addRecommended,
+  } = useCandidateManagement(teamId, sessionId, canAdd, showRecommendations)
 
   const candidateRestaurantIds = candidates.map(({ restaurantId }) => restaurantId)
   const selectableResults = searchResults.filter(({ id }) => !candidateRestaurantIds.includes(id))
@@ -29,25 +30,54 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2"><Sparkles className="size-4 text-primary" />오늘의 추천 점심</CardTitle>
-          <span className="text-xs text-muted-foreground">불참자 제외 · 평점 반영 · 최근 7일 확정 제외 (목업)</span>
-        </CardHeader>
-        <CardContent className="grid gap-2">
-          {recommended.length === 0 && <p className="text-sm text-muted-foreground">추천할 식당이 없어요.</p>}
-          {recommended.map(({ restaurant, averageRating, reason }) => (
-            <div key={restaurant.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <p className="text-sm font-medium">{restaurant.name} <span className="text-muted-foreground">· {restaurant.category}</span></p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground"><Rating value={averageRating} />{reason}</div>
-              </div>
-              <Button size="sm" variant="outline" disabled={isAdding} onClick={() => requireAuth(() => addRecommended(restaurant.id))}>추가</Button>
+      <div className="grid grid-cols-2 gap-3">
+        <Button variant="outline" className="w-full" onClick={() => setShowRecommendations((value) => !value)}>
+          <Sparkles /> 오늘의 추천 점심
+        </Button>
+        <Button variant="outline" className="w-full" onClick={() => setOpen(true)}><Plus /> 후보 추가</Button>
+      </div>
+      {showRecommendations && (
+        <Card>
+          <CardHeader className="flex-row items-start justify-between">
+            <div className="space-y-1">
+              <CardTitle className="flex items-center gap-2"><Sparkles className="size-4 text-primary" />오늘의 추천 점심</CardTitle>
+              <p className="text-xs text-muted-foreground">불참자 제외 · 평점 반영 · 최근 7일 확정 제외</p>
             </div>
-          ))}
-        </CardContent>
-      </Card>
-      <Button variant="outline" onClick={() => requireAuth(() => setOpen(true))}><Plus /> 후보 추가</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isRecommendedFetching}
+              aria-label="다른 추천 보기"
+              title="다른 추천 보기"
+              onClick={refreshRecommendations}
+            >
+              <RefreshCw className={isRecommendedFetching ? 'animate-spin' : undefined} />
+            </Button>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            {isRecommendedLoading ? (
+              <p className="text-sm text-muted-foreground">추천 메뉴를 찾고 있어요...</p>
+            ) : recommended.length === 0 ? (
+              <p className="text-sm text-muted-foreground">추천할 식당이 없어요.</p>
+            ) : recommended.map(({ restaurant, averageRating, reason }) => (
+              <div key={restaurant.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium">{restaurant.name} <span className="text-muted-foreground">· {restaurant.category}</span></p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><Rating value={averageRating} />{reason}</div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isAdding}
+                  onClick={() => addRecommended(restaurant.id, () => setShowRecommendations(false))}
+                >
+                  추가
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>

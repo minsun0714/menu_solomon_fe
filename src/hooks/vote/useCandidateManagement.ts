@@ -4,22 +4,27 @@ import { useRestaurantSearchQuery } from '@/hooks/restaurant/queries/useRestaura
 import { useAddCandidateMutation } from './mutations/useCandidateMutations'
 import { useRecommendedCandidatesQuery } from './queries/useVoteQueries'
 
-export function useCandidateManagement(teamId: string, sessionId: string, canAdd: boolean) {
+export function useCandidateManagement(teamId: string, sessionId: string, canAdd: boolean, showRecommendations = false) {
   const [keyword, setKeyword] = useState('')
-  const { data: recommended = [], isLoading: isRecommendedLoading } = useRecommendedCandidatesQuery(sessionId, canAdd)
-  const { data: searchResults = [], isLoading: isSearching } = useRestaurantSearchQuery(keyword)
+  const [recommendationPage, setRecommendationPage] = useState(0)
+  const { data: recommended = [], isLoading: isRecommendedLoading, isFetching: isRecommendedFetching } =
+    useRecommendedCandidatesQuery(sessionId, canAdd && showRecommendations, recommendationPage)
+  const { data: searchPage, isLoading: isSearching } = useRestaurantSearchQuery(keyword, 1)
   const { mutate, isPending: isAdding } = useAddCandidateMutation(sessionId, teamId)
 
   return {
     keyword,
     setKeyword,
     recommended,
-    searchResults,
+    searchResults: searchPage?.items ?? [],
     isRecommendedLoading,
+    isRecommendedFetching,
     isSearching,
     isAdding,
+    refreshRecommendations: () => setRecommendationPage((page) => page + 1),
     addCandidate: (restaurantId: string, onAdded?: () => void) =>
       mutate({ restaurantId, source: CANDIDATE_SOURCE.MANUAL }, { onSuccess: onAdded }),
-    addRecommended: (restaurantId: string) => mutate({ restaurantId, source: CANDIDATE_SOURCE.RECOMMENDED }),
+    addRecommended: (restaurantId: string, onAdded?: () => void) =>
+      mutate({ restaurantId, source: CANDIDATE_SOURCE.RECOMMENDED }, { onSuccess: onAdded }),
   }
 }

@@ -123,12 +123,17 @@ export const voteService = {
     })
   },
 
-  updateVote(sessionId: string, { closesAt }: UpdateVoteRequest): Promise<LunchVoteSession> {
+  updateVote(sessionId: string, { closesAt, name }: UpdateVoteRequest): Promise<LunchVoteSession> {
     return simulateLatency(() => {
       const session = getSessionOrThrow(sessionId)
       assertCreator(session)
       if (session.status !== VOTE_STATUS.OPEN) throw new ApiError('CONFLICT', '진행 중인 투표만 수정할 수 있습니다.')
-      session.closesAt = closesAt
+      if (closesAt !== undefined) session.closesAt = closesAt
+      if (name !== undefined) {
+        const trimmedName = name.trim()
+        if (!trimmedName) throw new ApiError('BAD_REQUEST', '투표 이름을 입력해 주세요.')
+        session.name = trimmedName
+      }
       return session
     })
   },
@@ -153,14 +158,17 @@ export const voteService = {
     })
   },
 
-  updateParticipation(sessionId: string, participating: boolean): Promise<void> {
+  updateParticipation(sessionId: string, teamMemberId: string, participating: boolean): Promise<void> {
     return simulateLatency(() => {
-      const me = getMyMemberOfSession(sessionId)
+      getMyMemberOfSession(sessionId)
       const participant = findOrThrow(
-        db.participants.find((p) => p.sessionId === sessionId && p.teamMemberId === me.id),
+        db.participants.find((p) => p.sessionId === sessionId && p.teamMemberId === teamMemberId),
         '참여자 정보를 찾을 수 없습니다.',
       )
       participant.participating = participating
+      if (!participating) {
+        db.ballots = db.ballots.filter((ballot) => !(ballot.sessionId === sessionId && ballot.teamMemberId === teamMemberId))
+      }
     })
   },
 
@@ -186,7 +194,21 @@ export const voteService = {
     })
   },
 
-  getRecommendedCandidates(sessionId: string): Promise<RecommendedCandidate[]> {
+  deleteCandidate(sessionId: string, candidateId: string): Promise<void> {
+    return simulateLatency(() => {
+      const session = getSessionOrThrow(sessionId)
+      getMyMember(session.teamId)
+      if (session.status !== VOTE_STATUS.OPEN) throw new ApiError('CONFLICT', '진행 중인 투표의 후보만 삭제할 수 있습니다.')
+      findOrThrow(
+        db.candidates.find((candidate) => candidate.id === candidateId && candidate.sessionId === sessionId),
+        '후보를 찾을 수 없습니다.',
+      )
+      db.candidates = db.candidates.filter((candidate) => candidate.id !== candidateId)
+      db.ballots = db.ballots.filter((ballot) => ballot.candidateId !== candidateId)
+    })
+  },
+
+  getRecommendedCandidates(sessionId: string, page = 0): Promise<RecommendedCandidate[]> {
     return simulateLatency(() => {
       const { teamId } = getSessionOrThrow(sessionId)
       const cutoff = Date.now() - RECOMMENDATION_EXCLUDE_DAYS * MS_PER_DAY
@@ -197,7 +219,7 @@ export const voteService = {
       const candidateIds = db.candidates.filter((c) => c.sessionId === sessionId).map(({ restaurantId }) => restaurantId)
       const participantCount = db.participants.filter((p) => p.sessionId === sessionId && p.participating).length
 
-      return db.teamRestaurants
+      const eligible = db.teamRestaurants
         .filter((tr) => tr.teamId === teamId)
         .map(({ restaurantId }) => restaurantId)
         .filter((restaurantId) => !recentlyConfirmed.includes(restaurantId) && !candidateIds.includes(restaurantId))
@@ -208,7 +230,13 @@ export const voteService = {
           return [{ restaurant, averageRating, reason: `참여자 ${participantCount}명 기준 · 최근 ${RECOMMENDATION_EXCLUDE_DAYS}일 내 선택 안 함` }]
         })
         .sort((a, b) => b.averageRating - a.averageRating)
-        .slice(0, RECOMMENDATION_LIMIT)
+
+      if (eligible.length <= RECOMMENDATION_LIMIT) return eligible
+      const offset = (page * RECOMMENDATION_LIMIT) % eligible.length
+      return Array.from(
+        { length: RECOMMENDATION_LIMIT },
+        (_, index) => eligible[(offset + index) % eligible.length],
+      )
     })
   },
 
