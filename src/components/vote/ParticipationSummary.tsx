@@ -2,22 +2,23 @@ import { UserCheck, UserX } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { TeamParticipation } from '@/types/vote'
+import type { ParticipantDetail } from '@/types/vote'
 
 type ParticipationSummaryProps = {
-  participants: TeamParticipation[]
-  nonParticipants: TeamParticipation[]
+  participants: ParticipantDetail[]
+  nonParticipants: ParticipantDetail[]
   isParticipating: boolean
   isUpdating: boolean
+  canToggle: boolean
   onToggleParticipation: () => void
 }
 
-function NameBadges({ members, emptyText }: { members: TeamParticipation[]; emptyText: string }) {
+function NameBadges({ members, emptyText }: { members: ParticipantDetail[]; emptyText: string }) {
   if (members.length === 0) return <span className="text-sm text-muted-foreground">{emptyText}</span>
   return (
     <div className="flex flex-wrap gap-1.5">
-      {members.map(({ teamMemberId, nickname }) => (
-        <Badge key={teamMemberId} variant="secondary">{nickname}</Badge>
+      {members.map(({ id, nickname }) => (
+        <Badge key={id} variant="secondary">{nickname}</Badge>
       ))}
     </div>
   )
@@ -28,15 +29,18 @@ export function ParticipationSummary({
   nonParticipants,
   isParticipating,
   isUpdating,
+  canToggle,
   onToggleParticipation,
 }: ParticipationSummaryProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
-        <CardTitle>오늘의 점심 참여 현황</CardTitle>
-        <Button variant={isParticipating ? 'outline' : 'default'} size="sm" disabled={isUpdating} onClick={onToggleParticipation}>
-          {isParticipating ? <><UserX /> 오늘은 불참할게요</> : <><UserCheck /> 다시 참여할게요</>}
+        <CardTitle>투표 참여 현황</CardTitle>
+        {canToggle && (
+          <Button variant={isParticipating ? 'outline' : 'default'} size="sm" disabled={isUpdating} onClick={onToggleParticipation}>
+          {isParticipating ? <><UserX /> 이번 투표 불참</> : <><UserCheck /> 다시 참여하기</>}
         </Button>
+        )}
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">

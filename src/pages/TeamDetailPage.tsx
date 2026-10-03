@@ -19,7 +19,7 @@ export function TeamDetailPage() {
   const { requireAuth } = useRequireAuth()
   const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<TeamTab>(parseTeamTab(searchParams.get('tab')))
-  const { team, members, currentMember, isAdmin, isMember, canLeave, requiresAdminTransfer, isLoading, isError, isLeaving, isTransferring, leaveTeam, transferAdmin } =
+  const { team, inviteUrl, members, currentMember, isAdmin, isMember, canLeave, requiresAdminTransfer, isLoading, isError, isLeaving, isTransferring, leaveTeam, transferAdmin } =
     useTeamDetail(teamId)
 
   const handleLeave = () => requireAuth(() => leaveTeam(() => navigate(ROUTES.MY_TEAMS)))
@@ -31,7 +31,7 @@ export function TeamDetailPage() {
 
   return (
     <div className="space-y-6">
-      <TeamHeader team={team} members={members} />
+      <TeamHeader team={team} members={members} inviteUrl={inviteUrl} />
       <Tabs value={tab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value={TEAM_TAB.VOTE}>점심 투표</TabsTrigger>
@@ -44,7 +44,7 @@ export function TeamDetailPage() {
         <TabsContent value={TEAM_TAB.HISTORY}><HistoryTab teamId={teamId} /></TabsContent>
         {isAdmin && (
           <TabsContent value={TEAM_TAB.MANAGEMENT}>
-            <TeamManagementTab team={team} transferCandidates={transferCandidates} isTransferring={isTransferring} onTransferAdmin={transferAdmin} />
+            <TeamManagementTab team={team} inviteUrl={inviteUrl} transferCandidates={transferCandidates} isTransferring={isTransferring} onTransferAdmin={transferAdmin} />
           </TabsContent>
         )}
       </Tabs>

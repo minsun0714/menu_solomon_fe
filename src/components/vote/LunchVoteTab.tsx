@@ -9,7 +9,6 @@ import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { useLunchVotes } from '@/hooks/vote/useLunchVotes'
 import { addHoursToNow } from '@/domain/voteRules'
 import { ClosingTimeDialog } from './ClosingTimeDialog'
-import { ParticipationSummary } from './ParticipationSummary'
 import { VoteSessionList } from './VoteSessionList'
 
 export function LunchVoteTab({ teamId }: { teamId: string }) {
@@ -18,18 +17,12 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
   const {
     activeSessions,
     pastSessions,
-    participants,
-    nonParticipants,
-    isParticipating,
     isLoading,
     isError,
     isCreating,
-    isUpdatingParticipation,
     createVote,
-    setParticipation,
   } = useLunchVotes(teamId)
 
-  const handleToggleParticipation = () => requireAuth(() => setParticipation(!isParticipating))
   const handleOpenSession = (sessionId: string) => navigate(ROUTES.VOTE_DETAIL(teamId, sessionId))
 
   if (isLoading) return <ListSkeleton />
@@ -37,13 +30,6 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
 
   return (
     <div className="space-y-6">
-      <ParticipationSummary
-        participants={participants}
-        nonParticipants={nonParticipants}
-        isParticipating={isParticipating}
-        isUpdating={isUpdatingParticipation}
-        onToggleParticipation={handleToggleParticipation}
-      />
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">점심 투표</h2>
         <CreateVoteButton isCreating={isCreating} onCreate={createVote} requireAuth={requireAuth} />

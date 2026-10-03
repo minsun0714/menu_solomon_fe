@@ -3,5 +3,5 @@ import { queryKeys } from '@/queries/queryKeys'
 import { teamService } from '@/services/teamService'
 
 export function useMyTeamsQuery(enabled: boolean) {
-  return useQuery({ queryKey: queryKeys.team.all, queryFn: teamService.getMyTeams, enabled })
+  return useQuery({ queryKey: queryKeys.team.mine, queryFn: teamService.getMyTeams, enabled })
 }

@@ -85,9 +85,3 @@ export type RecommendedCandidate = {
   averageRating: number
   reason: string
 }
-
-export type TeamParticipation = {
-  teamMemberId: string
-  nickname: string
-  participating: boolean
-}

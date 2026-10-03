@@ -27,10 +27,16 @@ export const seedUsers: User[] = [
 ]
 
 export const seedTeams: Team[] = [
-  { id: 't1', name: '플랫폼개발팀', description: '매일 점심 메뉴 고민을 함께 해결하는 개발팀입니다.', inviteToken: 'platform-dev-9f2k' },
-  { id: 't2', name: '디자인팀', description: '맛집 탐방을 좋아하는 디자이너들.', inviteToken: 'design-team-7a1c' },
-  { id: 't3', name: '점심 스터디', description: '새로 만든 작은 모임입니다.', inviteToken: 'lunch-study-3d8e' },
+  { id: 't1', name: '플랫폼개발팀', description: '매일 점심 메뉴 고민을 함께 해결하는 개발팀입니다.' },
+  { id: 't2', name: '디자인팀', description: '맛집 탐방을 좋아하는 디자이너들.' },
+  { id: 't3', name: '점심 스터디', description: '새로 만든 작은 모임입니다.' },
 ]
+
+export const seedInviteTokens: Record<string, string> = {
+  t1: 'platform-dev-9f2k',
+  t2: 'design-team-7a1c',
+  t3: 'lunch-study-3d8e',
+}
 
 export const seedMembers: TeamMember[] = [
   { id: 'm1', teamId: 't1', userId: 'u1', role: 'ADMIN', joinedAt: ago(60 * MS_PER_DAY) },

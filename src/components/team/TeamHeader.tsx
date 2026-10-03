@@ -3,19 +3,19 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { MemberAvatarGroup } from './MemberAvatarGroup'
 import { TOAST_MESSAGES } from '@/constants/messages'
-import { buildInviteUrl } from '@/domain/teamRules'
 import type { Team, TeamMemberProfile } from '@/types/team'
 
 type TeamHeaderProps = {
   team: Team
   members: TeamMemberProfile[]
+  inviteUrl?: string
 }
 
-export function TeamHeader({ team, members }: TeamHeaderProps) {
-  const { name, description, inviteToken } = team
-  const inviteUrl = buildInviteUrl(inviteToken)
+export function TeamHeader({ team, members, inviteUrl }: TeamHeaderProps) {
+  const { name, description } = team
 
   const handleCopy = async () => {
+    if (!inviteUrl) return
     try {
       await navigator.clipboard.writeText(inviteUrl)
       toast.success(TOAST_MESSAGES.INVITE_COPIED)
@@ -39,18 +39,20 @@ export function TeamHeader({ team, members }: TeamHeaderProps) {
           </span>
         </div>
       </div>
-      <div className="grid gap-2 md:w-80">
-        <span className="text-xs font-medium text-muted-foreground">초대 링크</span>
-        <div className="truncate rounded-md border bg-muted px-3 py-2 text-xs">{inviteUrl}</div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1" onClick={handleCopy}>
-            <Copy /> 링크 복사
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share2 /> 공유
-          </Button>
+      {inviteUrl && (
+        <div className="grid gap-2 md:w-80">
+          <span className="text-xs font-medium text-muted-foreground">초대 링크</span>
+          <div className="truncate rounded-md border bg-muted px-3 py-2 text-xs">{inviteUrl}</div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex-1" onClick={handleCopy}>
+              <Copy /> 링크 복사
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleShare}>
+              <Share2 /> 공유
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }

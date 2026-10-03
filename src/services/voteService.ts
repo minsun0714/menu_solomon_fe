@@ -11,7 +11,6 @@ import {
   getMyMember,
   getSessionOrThrow,
   getTeamOrThrow,
-  getUserOrThrow,
   nextId,
   settleSession,
   simulateLatency,
@@ -26,7 +25,6 @@ import type {
   LunchVoteSession,
   ParticipantDetail,
   RecommendedCandidate,
-  TeamParticipation,
   UpdateVoteRequest,
   VoteResultsSnapshot,
   VoteSessionDetail,
@@ -119,7 +117,7 @@ export const voteService = {
       db.members
         .filter((m) => m.teamId === teamId)
         .forEach((m) =>
-          db.participants.push({ id: nextId('p'), sessionId: session.id, teamMemberId: m.id, participating: !db.optedOutMemberIds.has(m.id) }),
+          db.participants.push({ id: nextId('p'), sessionId: session.id, teamMemberId: m.id, participating: true }),
         )
       return session
     })
@@ -163,33 +161,6 @@ export const voteService = {
         '참여자 정보를 찾을 수 없습니다.',
       )
       participant.participating = participating
-    })
-  },
-
-  getTeamParticipation(teamId: string): Promise<TeamParticipation[]> {
-    return simulateLatency(() => {
-      getTeamOrThrow(teamId)
-      return db.members
-        .filter((m) => m.teamId === teamId)
-        .map((m) => ({
-          teamMemberId: m.id,
-          nickname: getUserOrThrow(m.userId).nickname,
-          participating: !db.optedOutMemberIds.has(m.id),
-        }))
-    })
-  },
-
-  updateTeamParticipation(teamId: string, participating: boolean): Promise<void> {
-    return simulateLatency(() => {
-      const me = getMyMember(teamId)
-      if (participating) db.optedOutMemberIds.delete(me.id)
-      else db.optedOutMemberIds.add(me.id)
-      const openSessionIds = db.sessions.filter((s) => s.teamId === teamId && s.status === VOTE_STATUS.OPEN).map(({ id }) => id)
-      db.participants
-        .filter((p) => p.teamMemberId === me.id && openSessionIds.includes(p.sessionId))
-        .forEach((p) => {
-          p.participating = participating
-        })
     })
   },
 

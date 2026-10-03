@@ -4,26 +4,32 @@ import { ErrorState } from '@/components/common/ErrorState'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { CandidateList } from '@/components/vote/CandidateList'
 import { CandidateManagement } from '@/components/vote/CandidateManagement'
-import { ParticipantList } from '@/components/vote/ParticipantList'
+import { ParticipationSummary } from '@/components/vote/ParticipationSummary'
 import { VoteDecisionPanel } from '@/components/vote/VoteDecisionPanel'
 import { VoteDetailHeader } from '@/components/vote/VoteDetailHeader'
 import { VoteManagementActions } from '@/components/vote/VoteManagementActions'
 import { VOTE_STATUS } from '@/constants/vote'
 import { ROUTES } from '@/constants/routes'
+import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { useVoteSession } from '@/hooks/vote/useVoteSession'
 
 export function VoteDetailPage() {
   const { teamId = '', sessionId = '' } = useParams()
   const {
-    session, creatorNickname, candidates, participants, results, winnerCandidates,
+    session, creatorNickname, candidates, participatingMembers, nonParticipatingMembers, isParticipating,
+    isUpdatingParticipation, setParticipation, results, winnerCandidates,
     canEdit, canVote, canRevote, isLoading, isError,
   } = useVoteSession(teamId, sessionId)
+  const { requireAuth } = useRequireAuth()
+
+  const handleToggleParticipation = () => requireAuth(() => setParticipation(!isParticipating))
 
   if (isLoading) return <ListSkeleton count={4} />
   if (isError || !session) return <ErrorState message="투표를 찾을 수 없습니다." />
 
   const winnerCandidateIds = winnerCandidates.map(({ id }) => id)
-  const canAddCandidate = session.status === VOTE_STATUS.OPEN
+  const isOpen = session.status === VOTE_STATUS.OPEN
+  const canAddCandidate = isOpen
 
   return (
     <div className="space-y-6">
@@ -34,6 +40,14 @@ export function VoteDetailPage() {
         <VoteDetailHeader session={session} creatorNickname={creatorNickname ?? ''} />
         <VoteManagementActions teamId={teamId} session={session} canEdit={canEdit} canRevote={canRevote} />
       </div>
+      <ParticipationSummary
+        participants={participatingMembers}
+        nonParticipants={nonParticipatingMembers}
+        isParticipating={isParticipating}
+        isUpdating={isUpdatingParticipation}
+        canToggle={isOpen}
+        onToggleParticipation={handleToggleParticipation}
+      />
       <VoteDecisionPanel teamId={teamId} sessionId={sessionId} status={session.status} canRevote={canRevote} />
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-4">
@@ -41,7 +55,6 @@ export function VoteDetailPage() {
           <CandidateList teamId={teamId} sessionId={sessionId} candidates={candidates} results={results} winnerCandidateIds={winnerCandidateIds} canVote={canVote} />
         </div>
         <div className="space-y-4">
-          <ParticipantList participants={participants} />
           <CandidateManagement teamId={teamId} sessionId={sessionId} candidates={candidates} canAdd={canAddCandidate} />
         </div>
       </div>

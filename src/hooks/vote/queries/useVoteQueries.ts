@@ -10,15 +10,8 @@ export function useVoteSessionQuery(sessionId: string) {
   return useQuery({ queryKey: queryKeys.vote.detail(sessionId), queryFn: () => voteService.getVoteSession(sessionId) })
 }
 
-export function useParticipantsQuery(sessionId: string) {
+export function useVoteParticipantsQuery(sessionId: string) {
   return useQuery({ queryKey: queryKeys.vote.participants(sessionId), queryFn: () => voteService.getParticipants(sessionId) })
-}
-
-export function useTeamParticipationQuery(teamId: string) {
-  return useQuery({
-    queryKey: queryKeys.vote.teamParticipation(teamId),
-    queryFn: () => voteService.getTeamParticipation(teamId),
-  })
 }
 
 export function useCandidatesQuery(sessionId: string) {

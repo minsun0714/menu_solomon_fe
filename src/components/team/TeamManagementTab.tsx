@@ -7,22 +7,22 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { DIALOG_MESSAGES } from '@/constants/messages'
 import { ROUTES } from '@/constants/routes'
 import { useTeamManagement } from '@/hooks/team/useTeamManagement'
-import { buildInviteUrl } from '@/domain/teamRules'
 import { TeamForm } from './TeamForm'
 import type { Team, TeamMemberProfile } from '@/types/team'
 
 type TeamManagementTabProps = {
   team: Team
+  inviteUrl?: string
   transferCandidates: TeamMemberProfile[]
   isTransferring: boolean
   onTransferAdmin: (memberId: string) => void
 }
 
-export function TeamManagementTab({ team, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
+export function TeamManagementTab({ team, inviteUrl, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
   const navigate = useNavigate()
   const [nextAdminId, setNextAdminId] = useState('')
   const { isUpdating, isRegenerating, isDeleting, updateTeam, regenerateInviteToken, deleteTeam } = useTeamManagement(team.id)
-  const { name, description, inviteToken } = team
+  const { name, description } = team
 
   const handleDelete = () => deleteTeam(() => navigate(ROUTES.MY_TEAMS))
   const handleTransfer = () => {
@@ -66,7 +66,7 @@ export function TeamManagementTab({ team, transferCandidates, isTransferring, on
         <Card>
           <CardHeader>
             <CardTitle>초대 링크</CardTitle>
-            <CardDescription className="break-all">{buildInviteUrl(inviteToken)}</CardDescription>
+            <CardDescription className="break-all">{inviteUrl}</CardDescription>
           </CardHeader>
           <CardContent>
             <ConfirmDialog

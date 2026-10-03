@@ -4,7 +4,9 @@ export const queryKeys = {
   },
   team: {
     all: ['team'] as const,
+    mine: ['team', 'mine'] as const,
     detail: (teamId: string) => ['team', 'detail', teamId] as const,
+    invite: (teamId: string) => ['team', 'invite', teamId] as const,
     members: (teamId: string) => ['team', 'members', teamId] as const,
     preview: (inviteToken: string) => ['team', 'preview', inviteToken] as const,
   },
@@ -23,7 +25,6 @@ export const queryKeys = {
     sessions: (teamId: string) => ['vote', 'sessions', teamId] as const,
     detail: (sessionId: string) => ['vote', 'detail', sessionId] as const,
     participants: (sessionId: string) => ['vote', 'participants', sessionId] as const,
-    teamParticipation: (teamId: string) => ['vote', 'team-participation', teamId] as const,
     candidates: (sessionId: string) => ['vote', 'candidates', sessionId] as const,
     recommended: (sessionId: string) => ['vote', 'recommended', sessionId] as const,
     results: (sessionId: string) => ['vote', 'results', sessionId] as const,

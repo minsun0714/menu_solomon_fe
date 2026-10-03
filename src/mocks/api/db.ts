@@ -13,6 +13,7 @@ import {
   seedReviews,
   seedSessions,
   seedTeamRestaurants,
+  seedInviteTokens,
   seedTeams,
   seedUsers,
 } from '../data/seed'
@@ -22,6 +23,7 @@ export const db = {
   currentUserId: null as string | null,
   users: [...seedUsers],
   teams: [...seedTeams],
+  inviteTokens: { ...seedInviteTokens } as Record<string, string>,
   members: [...seedMembers],
   restaurants: [...seedRestaurants],
   teamRestaurants: [...seedTeamRestaurants],
@@ -31,7 +33,6 @@ export const db = {
   candidates: [...seedCandidates],
   ballots: [...seedBallots],
   decisions: [...seedDecisions],
-  optedOutMemberIds: new Set<string>(['m4']),
 }
 
 export const DEMO_USER_ID = CURRENT_USER_ID

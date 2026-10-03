@@ -12,10 +12,10 @@ export function useCreateTeamMutation() {
   })
 }
 
-export function useJoinTeamMutation() {
+export function useJoinTeamMutation(inviteToken: string) {
   return useAppMutation({
-    mutationFn: (teamId: string) => teamService.joinTeam(teamId),
-    invalidateKeys: (teamId) => [queryKeys.team.all, queryKeys.team.members(teamId)],
+    mutationFn: () => teamService.joinTeam(inviteToken),
+    invalidateKeys: (_, { teamId }) => [queryKeys.team.all, queryKeys.team.members(teamId)],
     successMessage: TOAST_MESSAGES.TEAM_JOINED,
   })
 }
@@ -31,7 +31,7 @@ export function useUpdateTeamMutation(teamId: string) {
 export function useLeaveTeamMutation(teamId: string) {
   return useAppMutation({
     mutationFn: () => teamService.leaveTeam(teamId),
-    invalidateKeys: () => [queryKeys.team.all],
+    invalidateKeys: () => [queryKeys.team.mine],
     successMessage: TOAST_MESSAGES.TEAM_LEFT,
   })
 }
@@ -47,7 +47,7 @@ export function useTransferAdminMutation(teamId: string) {
 export function useRegenerateInviteTokenMutation(teamId: string) {
   return useAppMutation({
     mutationFn: () => teamService.regenerateInviteToken(teamId),
-    invalidateKeys: () => [queryKeys.team.detail(teamId)],
+    invalidateKeys: () => [queryKeys.team.invite(teamId)],
     successMessage: TOAST_MESSAGES.INVITE_REGENERATED,
   })
 }
