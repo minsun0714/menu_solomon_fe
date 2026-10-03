@@ -20,6 +20,6 @@ export function canLeaveTeam(members: TeamMember[], member: TeamMember | undefin
   return Boolean(member) && !requiresAdminTransfer(members, member)
 }
 
-export function buildInviteUrl(inviteToken: string): string {
-  return `${INVITE_BASE_URL}${ROUTES.INVITATION(inviteToken)}`
+export function buildInviteLink(inviteCode: string): string {
+  return `${INVITE_BASE_URL}${ROUTES.INVITATION(inviteCode)}`
 }

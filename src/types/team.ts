@@ -9,7 +9,7 @@ export type Team = {
 }
 
 export type TeamInvite = {
-  inviteToken: string
+  inviteCode: string
 }
 
 export type TeamMember = {

@@ -13,17 +13,17 @@ import {
   seedReviews,
   seedSessions,
   seedTeamRestaurants,
-  seedInviteTokens,
+  seedInviteCodes,
   seedTeams,
   seedUsers,
 } from '../data/seed'
 import { ApiError } from './errors'
 
 export const db = {
-  currentUserId: null as string | null,
+  currentUserId: CURRENT_USER_ID,
   users: [...seedUsers],
   teams: [...seedTeams],
-  inviteTokens: { ...seedInviteTokens } as Record<string, string>,
+  inviteCodes: { ...seedInviteCodes } as Record<string, string>,
   members: [...seedMembers],
   restaurants: [...seedRestaurants],
   teamRestaurants: [...seedTeamRestaurants],
@@ -34,8 +34,6 @@ export const db = {
   ballots: [...seedBallots],
   decisions: [...seedDecisions],
 }
-
-export const DEMO_USER_ID = CURRENT_USER_ID
 
 let sequence = 1000
 export function nextId(prefix: string): string {
@@ -56,7 +54,6 @@ export function simulateLatency<T>(value: () => T): Promise<T> {
 }
 
 export function requireUserId(): string {
-  if (!db.currentUserId) throw new ApiError('UNAUTHORIZED', '로그인이 필요합니다.')
   return db.currentUserId
 }
 

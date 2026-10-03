@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/common/EmptyState'
 import { TOAST_MESSAGES } from '@/constants/messages'
-import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { ReviewForm } from './ReviewForm'
 import { ReviewItem } from './ReviewItem'
 import type { Review, ReviewRequest, ReviewWithAuthor } from '@/types/review'
@@ -21,15 +20,13 @@ type ReviewSectionProps = {
 }
 
 export function ReviewSection({ reviews, currentUserReview, currentMemberId, hasReview, isSaving, isDeleting, onSave, onDelete }: ReviewSectionProps) {
-  const { requireAuth } = useRequireAuth()
   const [isFormOpen, setIsFormOpen] = useState(false)
   const closeForm = () => setIsFormOpen(false)
 
-  const handleOpenForm = () =>
-    requireAuth(() => {
-      if (hasReview) toast.info(TOAST_MESSAGES.REVIEW_ALREADY_EXISTS)
-      setIsFormOpen(true)
-    })
+  const handleOpenForm = () => {
+    if (hasReview) toast.info(TOAST_MESSAGES.REVIEW_ALREADY_EXISTS)
+    setIsFormOpen(true)
+  }
   const handleSave = (request: ReviewRequest) => onSave(request, closeForm)
 
   return (

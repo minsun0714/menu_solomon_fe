@@ -1,6 +1,6 @@
 export const ROUTES = {
   LANDING: '/',
-  INVITATION: (inviteToken: string = ':inviteToken') => `/invite/${inviteToken}`,
+  INVITATION: (inviteCode: string = ':inviteCode') => `/invite/${inviteCode}`,
   MY_TEAMS: '/teams',
   TEAM_DETAIL: (teamId: string = ':teamId') => `/teams/${teamId}`,
   VOTE_DETAIL: (teamId: string = ':teamId', sessionId: string = ':sessionId') =>
@@ -13,11 +13,10 @@ export const TEAM_TAB = {
   VOTE: 'vote',
   RESTAURANTS: 'restaurants',
   HISTORY: 'history',
-  MANAGEMENT: 'management',
 } as const
 
 export type TeamTab = (typeof TEAM_TAB)[keyof typeof TEAM_TAB]
 
 export function parseTeamTab(value: string | null): TeamTab {
-  return Object.values(TEAM_TAB).find((tab) => tab === value) ?? TEAM_TAB.VOTE
+  return Object.values(TEAM_TAB).find((tab) => tab === value) ?? TEAM_TAB.RESTAURANTS
 }

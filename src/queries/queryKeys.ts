@@ -8,13 +8,13 @@ export const queryKeys = {
     detail: (teamId: string) => ['team', 'detail', teamId] as const,
     invite: (teamId: string) => ['team', 'invite', teamId] as const,
     members: (teamId: string) => ['team', 'members', teamId] as const,
-    preview: (inviteToken: string) => ['team', 'preview', inviteToken] as const,
+    preview: (inviteCode: string) => ['team', 'preview', inviteCode] as const,
   },
   restaurant: {
     all: ['restaurant'] as const,
     list: (teamId: string) => ['restaurant', 'list', teamId] as const,
     detail: (teamRestaurantId: string) => ['restaurant', 'detail', teamRestaurantId] as const,
-    search: (keyword: string) => ['restaurant', 'search', keyword] as const,
+    search: (keyword: string, page: number) => ['restaurant', 'search', keyword, page] as const,
   },
   review: {
     all: ['review'] as const,

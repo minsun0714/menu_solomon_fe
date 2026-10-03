@@ -32,7 +32,7 @@ export const seedTeams: Team[] = [
   { id: 't3', name: '점심 스터디', description: '새로 만든 작은 모임입니다.' },
 ]
 
-export const seedInviteTokens: Record<string, string> = {
+export const seedInviteCodes: Record<string, string> = {
   t1: 'platform-dev-9f2k',
   t2: 'design-team-7a1c',
   t3: 'lunch-study-3d8e',

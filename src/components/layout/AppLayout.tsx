@@ -1,13 +1,9 @@
 import { Outlet } from 'react-router-dom'
-import { TopNavigation } from './TopNavigation'
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen">
-      <TopNavigation />
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <Outlet />
-      </main>
-    </div>
+    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8">
+      <Outlet />
+    </main>
   )
 }

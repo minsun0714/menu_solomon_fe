@@ -1,8 +1,9 @@
+import { useEffect } from 'react'
 import { Utensils } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/common/EmptyState'
-import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
 import { useVoting } from '@/hooks/vote/useVoting'
+import { useDeleteCandidateMutation } from '@/hooks/vote/mutations/useCandidateMutations'
 import { VoteCandidateCard } from './VoteCandidateCard'
 import type { CandidateDetail, VoteResult } from '@/types/vote'
 
@@ -13,14 +14,19 @@ type CandidateListProps = {
   results: VoteResult[]
   winnerCandidateIds: string[]
   canVote: boolean
+  canDelete: boolean
 }
 
-export function CandidateList({ teamId, sessionId, candidates, results, winnerCandidateIds, canVote }: CandidateListProps) {
-  const { requireAuth } = useRequireAuth()
+export function CandidateList({ teamId, sessionId, candidates, results, winnerCandidateIds, canVote, canDelete }: CandidateListProps) {
   const { selectedCandidateId, selectCandidate, hasVoted, isSelectionChanged, isPending, vote, changeVote, cancelVote } = useVoting(teamId, sessionId)
+  const { mutate: deleteCandidate, isPending: isDeleting } = useDeleteCandidateMutation(sessionId, teamId)
 
-  const handleSelect = (candidateId: string) => requireAuth(() => selectCandidate(candidateId))
-  const handleSubmit = () => requireAuth(hasVoted ? changeVote : vote)
+  useEffect(() => {
+    if (selectedCandidateId && !candidates.some(({ id }) => id === selectedCandidateId)) selectCandidate(null)
+  }, [candidates, selectCandidate, selectedCandidateId])
+
+  const handleSelect = (candidateId: string) => selectCandidate(candidateId)
+  const handleSubmit = hasVoted ? changeVote : vote
   const resultOf = (candidateId: string): VoteResult =>
     results.find((result) => result.candidateId === candidateId) ?? { candidateId, voteCount: 0, percentage: 0 }
 
@@ -38,7 +44,10 @@ export function CandidateList({ teamId, sessionId, candidates, results, winnerCa
           isSelected={selectedCandidateId === candidate.id}
           isWinner={winnerCandidateIds.includes(candidate.id)}
           isSelectable={canVote && !isPending}
+          canDelete={canDelete}
+          isDeleting={isDeleting}
           onSelect={handleSelect}
+          onDelete={deleteCandidate}
         />
       ))}
       {canVote && (

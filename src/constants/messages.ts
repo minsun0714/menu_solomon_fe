@@ -5,9 +5,9 @@ export const TOAST_MESSAGES = {
   TEAM_LEFT: '팀에서 나갔습니다.',
   TEAM_DELETED: '팀이 삭제되었습니다.',
   ADMIN_TRANSFERRED: '관리자가 변경되었습니다.',
-  INVITE_REGENERATED: '초대 링크가 재발급되었습니다.',
-  INVITE_COPIED: '초대 링크를 복사했습니다.',
-  SHARE_PLACEHOLDER: '공유 기능은 곧 제공될 예정입니다.',
+  INVITE_REGENERATED: '초대 코드가 재발급되었습니다.',
+  INVITE_CODE_COPIED: '초대 코드를 복사했습니다.',
+  INVITE_LINK_COPIED: '초대 링크를 복사했습니다.',
   RESTAURANT_ADDED: '식당이 추가되었습니다.',
   RESTAURANT_REMOVED: '식당이 삭제되었습니다.',
   REVIEW_CREATED: '리뷰가 등록되었습니다.',
@@ -22,20 +22,15 @@ export const TOAST_MESSAGES = {
   VOTE_CANCELED: '투표를 취소했습니다.',
   REVOTE_STARTED: '재투표를 시작했습니다.',
   CANDIDATE_ADDED: '후보를 추가했습니다.',
+  CANDIDATE_DELETED: '후보를 삭제했습니다.',
   LUNCH_CONFIRMED: '점심 메뉴가 확정되었습니다.',
   DECISION_UPDATED: '확정 메뉴가 수정되었습니다.',
   DECISION_DELETED: '확정 메뉴가 삭제되었습니다.',
   PARTICIPATION_UPDATED: '참여 상태가 변경되었습니다.',
-  LOGGED_IN: '로그인되었습니다.',
   GENERIC_ERROR: '요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.',
 } as const
 
 export const DIALOG_MESSAGES = {
-  LOGIN_REQUIRED: {
-    title: '로그인이 필요합니다',
-    description: '이 기능은 로그인 후 이용할 수 있어요. 데모 로그인으로 계속해 보세요.',
-    action: '데모 로그인',
-  },
   LEAVE_TEAM: {
     title: '팀에서 나갈까요?',
     description: '나가면 이 팀의 투표와 리뷰에 더 이상 참여할 수 없습니다.',
@@ -47,14 +42,19 @@ export const DIALOG_MESSAGES = {
     action: '팀 삭제',
   },
   REGENERATE_INVITE: {
-    title: '초대 링크를 재발급할까요?',
-    description: '기존 초대 링크는 더 이상 사용할 수 없게 됩니다.',
+    title: '초대 코드를 재발급할까요?',
+    description: '기존 초대 코드와 해당 코드가 포함된 링크는 더 이상 사용할 수 없게 됩니다.',
     action: '재발급',
   },
   DELETE_VOTE: {
     title: '투표를 삭제할까요?',
     description: '모든 후보와 투표 내역이 함께 삭제됩니다.',
     action: '투표 삭제',
+  },
+  DELETE_CANDIDATE: {
+    title: '후보 식당을 삭제할까요?',
+    description: '이 후보에 등록된 투표도 함께 삭제됩니다.',
+    action: '후보 삭제',
   },
   REVOTE: {
     title: '재투표를 시작할까요?',

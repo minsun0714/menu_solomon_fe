@@ -7,23 +7,24 @@ import type { TeamRequest } from '@/types/team'
 
 type CreateTeamDialogProps = {
   isCreating: boolean
+  triggerClassName?: string
   onCreate: (request: TeamRequest, onCreated: () => void) => void
 }
 
-export function CreateTeamDialog({ isCreating, onCreate }: CreateTeamDialogProps) {
+export function CreateTeamDialog({ isCreating, triggerClassName, onCreate }: CreateTeamDialogProps) {
   const [open, setOpen] = useState(false)
   const handleSubmit = (request: TeamRequest) => onCreate(request, () => setOpen(false))
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button className={triggerClassName} onClick={() => setOpen(true)}>
         <Plus /> 팀 만들기
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 팀 만들기</DialogTitle>
-            <DialogDescription>팀을 만들고 초대 링크로 동료를 초대하세요.</DialogDescription>
+            <DialogDescription>팀을 만들고 초대 코드나 링크로 동료를 초대하세요.</DialogDescription>
           </DialogHeader>
           <TeamForm submitLabel="팀 만들기" isSubmitting={isCreating} onSubmit={handleSubmit} />
         </DialogContent>

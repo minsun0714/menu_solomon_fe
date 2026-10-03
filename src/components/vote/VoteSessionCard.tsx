@@ -14,7 +14,7 @@ type VoteSessionCardProps = {
 }
 
 export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
-  const { id, status, creatorNickname, closesAt, participantCount, candidateCount, ballotCount, myBallotCandidateId } = session
+  const { id, name, status, creatorNickname, closesAt, participantCount, candidateCount, ballotCount, myBallotCandidateId } = session
   const hasVoted = myBallotCandidateId !== null
 
   return (
@@ -22,7 +22,7 @@ export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
       <CardHeader className="flex-row items-start justify-between">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2">
-            점심 투표 #{id}
+            {name ?? `점심 투표 #${id}`}
             <StatusBadge status={status} />
           </CardTitle>
           <p className="text-sm text-muted-foreground">{creatorNickname}님이 만든 투표</p>
@@ -38,7 +38,7 @@ export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
           {hasVoted && <span className="flex items-center gap-1 text-primary"><CheckCircle2 className="size-4" />투표 완료</span>}
         </div>
         <Button size="sm" variant={hasVoted ? 'outline' : 'default'} onClick={() => onOpen(id)}>
-          {hasVoted ? '내 투표 보기' : '투표하러 가기'}
+          {status === VOTE_STATUS.OPEN ? '투표하러 가기' : '투표 결과 보기'}
         </Button>
       </CardContent>
     </Card>

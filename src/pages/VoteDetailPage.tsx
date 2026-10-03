@@ -1,5 +1,5 @@
-import { ArrowLeft } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { BackLink } from '@/components/common/BackLink'
 import { ErrorState } from '@/components/common/ErrorState'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { CandidateList } from '@/components/vote/CandidateList'
@@ -9,23 +9,21 @@ import { VoteDecisionPanel } from '@/components/vote/VoteDecisionPanel'
 import { VoteDetailHeader } from '@/components/vote/VoteDetailHeader'
 import { VoteManagementActions } from '@/components/vote/VoteManagementActions'
 import { VOTE_STATUS } from '@/constants/vote'
-import { ROUTES } from '@/constants/routes'
-import { useRequireAuth } from '@/hooks/auth/AuthPromptContext'
+import { ROUTES, TEAM_TAB } from '@/constants/routes'
 import { useVoteSession } from '@/hooks/vote/useVoteSession'
 
 export function VoteDetailPage() {
   const { teamId = '', sessionId = '' } = useParams()
   const {
-    session, creatorNickname, candidates, participatingMembers, nonParticipatingMembers, isParticipating,
-    isUpdatingParticipation, setParticipation, results, winnerCandidates,
+    session, creatorNickname, candidates, participatingMembers, nonParticipatingMembers,
+    isUpdatingParticipation, setMemberParticipation, results, winnerCandidates, currentMember,
     canEdit, canVote, canRevote, isLoading, isError,
   } = useVoteSession(teamId, sessionId)
-  const { requireAuth } = useRequireAuth()
 
-  const handleToggleParticipation = () => requireAuth(() => setParticipation(!isParticipating))
+  const teamVotePath = `${ROUTES.TEAM_DETAIL(teamId)}?tab=${TEAM_TAB.VOTE}`
 
-  if (isLoading) return <ListSkeleton count={4} />
-  if (isError || !session) return <ErrorState message="투표를 찾을 수 없습니다." />
+  if (isLoading) return <div className="space-y-6"><BackLink to={teamVotePath}>팀으로 가기</BackLink><ListSkeleton count={4} /></div>
+  if (isError || !session) return <div className="space-y-6"><BackLink to={teamVotePath}>팀으로 가기</BackLink><ErrorState message="투표를 찾을 수 없습니다." /></div>
 
   const winnerCandidateIds = winnerCandidates.map(({ id }) => id)
   const isOpen = session.status === VOTE_STATUS.OPEN
@@ -33,26 +31,25 @@ export function VoteDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link to={ROUTES.TEAM_DETAIL(teamId)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> 팀으로 돌아가기
-      </Link>
+      <BackLink to={teamVotePath}>팀으로 가기</BackLink>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <VoteDetailHeader session={session} creatorNickname={creatorNickname ?? ''} />
+        <VoteDetailHeader session={session} creatorNickname={creatorNickname ?? ''} teamId={teamId} canEdit={canEdit} />
         <VoteManagementActions teamId={teamId} session={session} canEdit={canEdit} canRevote={canRevote} />
       </div>
       <ParticipationSummary
         participants={participatingMembers}
         nonParticipants={nonParticipatingMembers}
-        isParticipating={isParticipating}
+        currentMemberId={currentMember?.id}
         isUpdating={isUpdatingParticipation}
         canToggle={isOpen}
-        onToggleParticipation={handleToggleParticipation}
+        canManageParticipants={isOpen}
+        onSetParticipation={setMemberParticipation}
       />
       <VoteDecisionPanel teamId={teamId} sessionId={sessionId} status={session.status} canRevote={canRevote} />
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">후보 {candidates.length}</h2>
-          <CandidateList teamId={teamId} sessionId={sessionId} candidates={candidates} results={results} winnerCandidateIds={winnerCandidateIds} canVote={canVote} />
+          <CandidateList teamId={teamId} sessionId={sessionId} candidates={candidates} results={results} winnerCandidateIds={winnerCandidateIds} canVote={canVote} canDelete={isOpen} />
         </div>
         <div className="space-y-4">
           <CandidateManagement teamId={teamId} sessionId={sessionId} candidates={candidates} canAdd={canAddCandidate} />

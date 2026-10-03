@@ -12,16 +12,17 @@ import type { Team, TeamMemberProfile } from '@/types/team'
 
 type TeamManagementTabProps = {
   team: Team
-  inviteUrl?: string
+  inviteCode?: string
+  inviteLink?: string
   transferCandidates: TeamMemberProfile[]
   isTransferring: boolean
   onTransferAdmin: (memberId: string) => void
 }
 
-export function TeamManagementTab({ team, inviteUrl, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
+export function TeamManagementTab({ team, inviteCode, inviteLink, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
   const navigate = useNavigate()
   const [nextAdminId, setNextAdminId] = useState('')
-  const { isUpdating, isRegenerating, isDeleting, updateTeam, regenerateInviteToken, deleteTeam } = useTeamManagement(team.id)
+  const { isUpdating, isRegenerating, isDeleting, updateTeam, regenerateInviteCode, deleteTeam } = useTeamManagement(team.id)
   const { name, description } = team
 
   const handleDelete = () => deleteTeam(() => navigate(ROUTES.MY_TEAMS))
@@ -65,15 +66,16 @@ export function TeamManagementTab({ team, inviteUrl, transferCandidates, isTrans
 
         <Card>
           <CardHeader>
-            <CardTitle>초대 링크</CardTitle>
-            <CardDescription className="break-all">{inviteUrl}</CardDescription>
+            <CardTitle>초대 코드</CardTitle>
+            <CardDescription className="font-medium tracking-wide">{inviteCode}</CardDescription>
+            <CardDescription className="break-all">초대 링크: {inviteLink}</CardDescription>
           </CardHeader>
           <CardContent>
             <ConfirmDialog
-              trigger={<Button variant="outline" disabled={isRegenerating}>링크 재발급</Button>}
+              trigger={<Button variant="outline" disabled={isRegenerating}>코드 재발급</Button>}
               message={DIALOG_MESSAGES.REGENERATE_INVITE}
               destructive={false}
-              onConfirm={regenerateInviteToken}
+              onConfirm={regenerateInviteCode}
             />
           </CardContent>
         </Card>

@@ -18,11 +18,11 @@ import type { Team, TeamInvite, TeamMember, TeamMemberProfile, TeamPreview, Team
 
 const toProfile = (member: TeamMember): TeamMemberProfile => ({ ...member, user: getUserOrThrow(member.userId) })
 
-const generateInviteToken = (name: string) =>
+const generateInviteCode = (name: string) =>
   `${name.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).slice(2, 6)}`
 
-const findTeamByInviteToken = (inviteToken: string) =>
-  db.teams.find(({ id }) => db.inviteTokens[id] === inviteToken)
+const findTeamByInviteCode = (inviteCode: string) =>
+  db.teams.find(({ id }) => db.inviteCodes[id] === inviteCode)
 
 function getLatestLunch(teamId: string): TeamSummary['latestLunch'] {
   const sessionIds = db.sessions.filter((s) => s.teamId === teamId).map(({ id }) => id)
@@ -59,11 +59,11 @@ export const teamService = {
     return simulateLatency(() => getTeamOrThrow(teamId))
   },
 
-  getTeamByInviteToken(inviteToken: string): Promise<TeamPreview> {
+  getTeamByInviteCode(inviteCode: string): Promise<TeamPreview> {
     return simulateLatency(() => {
       const team = findOrThrow(
-        findTeamByInviteToken(inviteToken),
-        '유효하지 않은 초대 링크입니다.',
+        findTeamByInviteCode(inviteCode),
+        '유효하지 않은 초대 코드입니다.',
       )
       const members = db.members.filter(({ teamId }) => teamId === team.id).map(toProfile)
       return { ...team, memberCount: members.length, members }
@@ -82,7 +82,7 @@ export const teamService = {
       const userId = requireUserId()
       const team: Team = { id: nextId('t'), name, description }
       db.teams.push(team)
-      db.inviteTokens[team.id] = generateInviteToken(name)
+      db.inviteCodes[team.id] = generateInviteCode(name)
       db.members.push({ id: nextId('m'), teamId: team.id, userId, role: TEAM_ROLE.ADMIN, joinedAt: new Date().toISOString() })
       return team
     })
@@ -91,14 +91,14 @@ export const teamService = {
   getTeamInvite(teamId: string): Promise<TeamInvite> {
     return simulateLatency(() => {
       getMyMember(teamId)
-      return { inviteToken: db.inviteTokens[getTeamOrThrow(teamId).id] }
+      return { inviteCode: db.inviteCodes[getTeamOrThrow(teamId).id] }
     })
   },
 
-  joinTeam(inviteToken: string): Promise<TeamMember> {
+  joinTeam(inviteCode: string): Promise<TeamMember> {
     return simulateLatency(() => {
       const userId = requireUserId()
-      const { id: teamId } = findOrThrow(findTeamByInviteToken(inviteToken), '유효하지 않거나 만료된 초대 링크입니다.')
+      const { id: teamId } = findOrThrow(findTeamByInviteCode(inviteCode), '유효하지 않거나 만료된 초대 코드입니다.')
       const existing = db.members.find((m) => m.teamId === teamId && m.userId === userId)
       if (existing) throw new ApiError('CONFLICT', '이미 참여 중인 팀입니다.')
       const member: TeamMember = { id: nextId('m'), teamId, userId, role: TEAM_ROLE.MEMBER, joinedAt: new Date().toISOString() }
@@ -124,7 +124,7 @@ export const teamService = {
       db.members = db.members.filter(({ id }) => id !== me.id)
       if (others.length === 0) {
         db.teams = db.teams.filter(({ id }) => id !== teamId)
-        delete db.inviteTokens[teamId]
+        delete db.inviteCodes[teamId]
       }
     })
   },
@@ -139,13 +139,13 @@ export const teamService = {
     })
   },
 
-  regenerateInviteToken(teamId: string): Promise<TeamInvite> {
+  regenerateInviteCode(teamId: string): Promise<TeamInvite> {
     return simulateLatency(() => {
       const team = getTeamOrThrow(teamId)
       if (!isTeamAdmin(getMyMember(teamId))) throw new ApiError('FORBIDDEN', '관리자만 재발급할 수 있습니다.')
-      const inviteToken = generateInviteToken(team.name)
-      db.inviteTokens[teamId] = inviteToken
-      return { inviteToken }
+      const inviteCode = generateInviteCode(team.name)
+      db.inviteCodes[teamId] = inviteCode
+      return { inviteCode }
     })
   },
 
@@ -154,7 +154,7 @@ export const teamService = {
       if (!isTeamAdmin(getMyMember(teamId))) throw new ApiError('FORBIDDEN', '관리자만 삭제할 수 있습니다.')
       db.teams = db.teams.filter(({ id }) => id !== teamId)
       db.members = db.members.filter((m) => m.teamId !== teamId)
-      delete db.inviteTokens[teamId]
+      delete db.inviteCodes[teamId]
     })
   },
 

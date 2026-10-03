@@ -18,10 +18,10 @@ export function useCandidatesQuery(sessionId: string) {
   return useQuery({ queryKey: queryKeys.vote.candidates(sessionId), queryFn: () => voteService.getCandidates(sessionId) })
 }
 
-export function useRecommendedCandidatesQuery(sessionId: string, enabled: boolean) {
+export function useRecommendedCandidatesQuery(sessionId: string, enabled: boolean, refreshIndex = 0) {
   return useQuery({
-    queryKey: queryKeys.vote.recommended(sessionId),
-    queryFn: () => voteService.getRecommendedCandidates(sessionId),
+    queryKey: [...queryKeys.vote.recommended(sessionId), refreshIndex],
+    queryFn: () => voteService.getRecommendedCandidates(sessionId, refreshIndex),
     enabled,
   })
 }
