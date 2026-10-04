@@ -48,28 +48,21 @@ function currentMemberIdOf(teamId: string): string | null {
 
 function toSummary(session: LunchVoteSession): VoteSessionSummary {
   const myMemberId = currentMemberIdOf(session.teamId)
-  const myBallot = db.ballots.find((b) => b.sessionId === session.id && b.teamMemberId === myMemberId)
+  const sessionBallots = db.ballots.filter((b) => b.sessionId === session.id)
+  const myBallots = db.ballots.filter((b) => b.sessionId === session.id && b.teamMemberId === myMemberId)
   return {
     ...session,
     creatorNickname: getMemberNickname(session.createdByTeamMemberId),
     participantCount: db.participants.filter((p) => p.sessionId === session.id && p.participating).length,
     candidateCount: db.candidates.filter((c) => c.sessionId === session.id).length,
-    ballotCount: db.ballots.filter((b) => b.sessionId === session.id).length,
-    myBallotCandidateId: myBallot?.candidateId ?? null,
+    ballotCount: new Set(sessionBallots.map(({ teamMemberId }) => teamMemberId)).size,
+    myBallotCandidateIds: myBallots.map(({ candidateId }) => candidateId),
   }
 }
 
 function toCandidateDetail(candidate: LunchCandidate, teamId: string): CandidateDetail {
   const restaurant = findOrThrow(db.restaurants.find(({ id }) => id === candidate.restaurantId), '식당을 찾을 수 없습니다.')
   return { ...candidate, restaurant, averageRating: getAverageRatingOfRestaurant(restaurant.id, teamId) }
-}
-
-function findOwnBallot(ballotId: string): LunchBallot {
-  const ballot = findOrThrow(db.ballots.find(({ id }) => id === ballotId), '투표 내역을 찾을 수 없습니다.')
-  const session = getSessionOrThrow(ballot.sessionId)
-  if (getMyMember(session.teamId).id !== ballot.teamMemberId) throw new ApiError('FORBIDDEN', '본인의 투표만 변경할 수 있습니다.')
-  if (!isVoteOpen(session, Date.now())) throw new ApiError('CONFLICT', '투표가 종료되었습니다.')
-  return ballot
 }
 
 function findDecision(decisionId: string): { decision: LunchDecision; session: LunchVoteSession } {
@@ -83,6 +76,7 @@ export const voteService = {
   getVoteSessions(teamId: string): Promise<VoteSessionSummary[]> {
     return simulateLatency(() => {
       getTeamOrThrow(teamId)
+      getMyMember(teamId)
       db.sessions.filter((s) => s.teamId === teamId).forEach(({ id }) => settleSession(id))
       return db.sessions
         .filter((s) => s.teamId === teamId)
@@ -94,6 +88,7 @@ export const voteService = {
   getVoteSession(sessionId: string): Promise<VoteSessionDetail> {
     return simulateLatency(() => {
       const session = getSessionOrThrow(sessionId)
+      getMyMember(session.teamId)
       return {
         session,
         creatorNickname: getMemberNickname(session.createdByTeamMemberId),
@@ -126,7 +121,7 @@ export const voteService = {
   updateVote(sessionId: string, { closesAt, name }: UpdateVoteRequest): Promise<LunchVoteSession> {
     return simulateLatency(() => {
       const session = getSessionOrThrow(sessionId)
-      assertCreator(session)
+      getMyMember(session.teamId)
       if (session.status !== VOTE_STATUS.OPEN) throw new ApiError('CONFLICT', '진행 중인 투표만 수정할 수 있습니다.')
       if (closesAt !== undefined) session.closesAt = closesAt
       if (name !== undefined) {
@@ -140,7 +135,7 @@ export const voteService = {
 
   deleteVote(sessionId: string): Promise<void> {
     return simulateLatency(() => {
-      assertCreator(getSessionOrThrow(sessionId))
+      getMyMemberOfSession(sessionId)
       db.sessions = db.sessions.filter(({ id }) => id !== sessionId)
       db.participants = db.participants.filter((p) => p.sessionId !== sessionId)
       db.candidates = db.candidates.filter((c) => c.sessionId !== sessionId)
@@ -151,7 +146,7 @@ export const voteService = {
 
   getParticipants(sessionId: string): Promise<ParticipantDetail[]> {
     return simulateLatency(() => {
-      getSessionOrThrow(sessionId)
+      getMyMemberOfSession(sessionId)
       return db.participants
         .filter((p) => p.sessionId === sessionId)
         .map((p) => ({ ...p, nickname: getMemberNickname(p.teamMemberId) }))
@@ -175,6 +170,7 @@ export const voteService = {
   getCandidates(sessionId: string): Promise<CandidateDetail[]> {
     return simulateLatency(() => {
       const { teamId } = getSessionOrThrow(sessionId)
+      getMyMember(teamId)
       return db.candidates.filter((c) => c.sessionId === sessionId).map((c) => toCandidateDetail(c, teamId))
     })
   },
@@ -211,6 +207,7 @@ export const voteService = {
   getRecommendedCandidates(sessionId: string, page = 0): Promise<RecommendedCandidate[]> {
     return simulateLatency(() => {
       const { teamId } = getSessionOrThrow(sessionId)
+      getMyMember(teamId)
       const cutoff = Date.now() - RECOMMENDATION_EXCLUDE_DAYS * MS_PER_DAY
       const teamSessionIds = db.sessions.filter((s) => s.teamId === teamId).map(({ id }) => id)
       const recentlyConfirmed = db.decisions
@@ -240,7 +237,7 @@ export const voteService = {
     })
   },
 
-  submitBallot(sessionId: string, candidateId: string): Promise<LunchBallot> {
+  saveBallots(sessionId: string, candidateIds: string[]): Promise<LunchBallot[]> {
     return simulateLatency(() => {
       const session = getSessionOrThrow(sessionId)
       const me = getMyMember(session.teamId)
@@ -248,37 +245,33 @@ export const voteService = {
       if (!canCastVote(session, participant?.participating ?? false, Date.now())) {
         throw new ApiError('CONFLICT', '투표할 수 없는 상태입니다.')
       }
-      findOrThrow(db.candidates.find((c) => c.id === candidateId && c.sessionId === sessionId), '후보를 찾을 수 없습니다.')
-      if (db.ballots.some((b) => b.sessionId === sessionId && b.teamMemberId === me.id)) {
-        throw new ApiError('CONFLICT', '이미 투표했습니다.')
-      }
+      const uniqueCandidateIds = [...new Set(candidateIds)]
+      if (uniqueCandidateIds.length === 0) throw new ApiError('BAD_REQUEST', '한 개 이상의 후보를 선택해 주세요.')
+      uniqueCandidateIds.forEach((candidateId) =>
+        findOrThrow(db.candidates.find((c) => c.id === candidateId && c.sessionId === sessionId), '후보를 찾을 수 없습니다.'),
+      )
       const now = new Date().toISOString()
-      const ballot: LunchBallot = { id: nextId('b'), sessionId, candidateId, teamMemberId: me.id, createdAt: now, updatedAt: now }
-      db.ballots.push(ballot)
-      return ballot
+      db.ballots = db.ballots.filter((ballot) => !(ballot.sessionId === sessionId && ballot.teamMemberId === me.id))
+      const ballots = uniqueCandidateIds.map((candidateId) => ({
+        id: nextId('b'), sessionId, candidateId, teamMemberId: me.id, createdAt: now, updatedAt: now,
+      }))
+      db.ballots.push(...ballots)
+      return ballots
     })
   },
 
-  updateBallot(ballotId: string, candidateId: string): Promise<LunchBallot> {
+  deleteBallots(sessionId: string): Promise<void> {
     return simulateLatency(() => {
-      const ballot = findOwnBallot(ballotId)
-      findOrThrow(db.candidates.find((c) => c.id === candidateId && c.sessionId === ballot.sessionId), '후보를 찾을 수 없습니다.')
-      ballot.candidateId = candidateId
-      ballot.updatedAt = new Date().toISOString()
-      return ballot
-    })
-  },
-
-  deleteBallot(ballotId: string): Promise<void> {
-    return simulateLatency(() => {
-      findOwnBallot(ballotId)
-      db.ballots = db.ballots.filter(({ id }) => id !== ballotId)
+      const session = getSessionOrThrow(sessionId)
+      const me = getMyMember(session.teamId)
+      if (!isVoteOpen(session, Date.now())) throw new ApiError('CONFLICT', '투표가 종료되었습니다.')
+      db.ballots = db.ballots.filter((ballot) => !(ballot.sessionId === sessionId && ballot.teamMemberId === me.id))
     })
   },
 
   getVoteResults(sessionId: string): Promise<VoteResultsSnapshot> {
     return simulateLatency(() => {
-      getSessionOrThrow(sessionId)
+      getMyMemberOfSession(sessionId)
       const candidates = db.candidates.filter((c) => c.sessionId === sessionId)
       const ballots = db.ballots.filter((b) => b.sessionId === sessionId)
       return { results: calculateVoteResults(candidates, ballots), ballots }

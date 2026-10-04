@@ -17,7 +17,7 @@ export function requiresAdminTransfer(members: TeamMember[], member: TeamMember 
 }
 
 export function canLeaveTeam(members: TeamMember[], member: TeamMember | undefined): boolean {
-  return Boolean(member) && !requiresAdminTransfer(members, member)
+  return members.length > 0 && Boolean(member)
 }
 
 export function buildInviteLink(inviteCode: string): string {

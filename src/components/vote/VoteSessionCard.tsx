@@ -14,8 +14,8 @@ type VoteSessionCardProps = {
 }
 
 export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
-  const { id, name, status, creatorNickname, closesAt, participantCount, candidateCount, ballotCount, myBallotCandidateId } = session
-  const hasVoted = myBallotCandidateId !== null
+  const { id, name, status, creatorNickname, closesAt, participantCount, candidateCount, ballotCount, myBallotCandidateIds } = session
+  const hasVoted = myBallotCandidateIds.length > 0
 
   return (
     <Card>

@@ -9,17 +9,15 @@ function ballotInvalidation(sessionId: string, teamId: string) {
 
 export function useSubmitBallotMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (candidateId: string) => voteService.submitBallot(sessionId, candidateId),
+    mutationFn: (candidateIds: string[]) => voteService.saveBallots(sessionId, candidateIds),
     invalidateKeys: ballotInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.VOTE_SUBMITTED,
   })
 }
 
-type UpdateBallotVariables = { ballotId: string; candidateId: string }
-
 export function useUpdateBallotMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: ({ ballotId, candidateId }: UpdateBallotVariables) => voteService.updateBallot(ballotId, candidateId),
+    mutationFn: (candidateIds: string[]) => voteService.saveBallots(sessionId, candidateIds),
     invalidateKeys: ballotInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.VOTE_CHANGED,
   })
@@ -27,7 +25,7 @@ export function useUpdateBallotMutation(sessionId: string, teamId: string) {
 
 export function useDeleteBallotMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (ballotId: string) => voteService.deleteBallot(ballotId),
+    mutationFn: () => voteService.deleteBallots(sessionId),
     invalidateKeys: ballotInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.VOTE_CANCELED,
   })

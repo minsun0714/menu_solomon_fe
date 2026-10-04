@@ -19,12 +19,14 @@ function getOwnReview(reviewId: string): Review {
 
 export const reviewService = {
   getReviews(teamRestaurantId: string): Promise<ReviewWithAuthor[]> {
-    return simulateLatency(() =>
-      db.reviews
+    return simulateLatency(() => {
+      const teamRestaurant = findOrThrow(db.teamRestaurants.find(({ id }) => id === teamRestaurantId), '식당을 찾을 수 없습니다.')
+      getMyMember(teamRestaurant.teamId)
+      return db.reviews
         .filter((review) => review.teamRestaurantId === teamRestaurantId)
         .map((review) => ({ ...review, authorNickname: getMemberNickname(review.teamMemberId) }))
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    )
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    })
   },
 
   createReview(teamRestaurantId: string, request: ReviewRequest): Promise<Review> {

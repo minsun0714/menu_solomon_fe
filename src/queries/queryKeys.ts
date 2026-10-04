@@ -4,7 +4,7 @@ export const queryKeys = {
   },
   team: {
     all: ['team'] as const,
-    mine: ['team', 'mine'] as const,
+    mine: (sort: string = 'LATEST_LUNCH') => ['team', 'mine', sort] as const,
     detail: (teamId: string) => ['team', 'detail', teamId] as const,
     invite: (teamId: string) => ['team', 'invite', teamId] as const,
     members: (teamId: string) => ['team', 'members', teamId] as const,

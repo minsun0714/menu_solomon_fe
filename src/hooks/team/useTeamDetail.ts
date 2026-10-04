@@ -1,4 +1,4 @@
-import { useLeaveTeamMutation, useTransferAdminMutation } from './mutations/useTeamMutations'
+import { useLeaveTeamMutation, useTransferAdminAndLeaveMutation, useTransferAdminMutation } from './mutations/useTeamMutations'
 import { buildInviteLink } from '@/domain/teamRules'
 import { useTeamDetailQuery } from './queries/useTeamDetailQuery'
 import { useTeamInviteQuery } from './queries/useTeamInviteQuery'
@@ -10,9 +10,12 @@ export function useTeamDetail(teamId: string) {
   const { data: invite } = useTeamInviteQuery(teamId, permissions.isMember)
   const { mutate: leave, isPending: isLeaving } = useLeaveTeamMutation(teamId)
   const { mutate: transfer, isPending: isTransferring } = useTransferAdminMutation(teamId)
+  const { mutate: transferAndLeave, isPending: isTransferLeaving } = useTransferAdminAndLeaveMutation(teamId)
 
   const leaveTeam = (onLeft?: () => void) => leave(undefined, { onSuccess: onLeft })
   const transferAdmin = (memberId: string) => transfer(memberId)
+  const transferAdminAndLeave = (memberId: string, onLeft?: () => void) =>
+    transferAndLeave(memberId, { onSuccess: onLeft })
 
   return {
     team,
@@ -21,9 +24,10 @@ export function useTeamDetail(teamId: string) {
     ...permissions,
     isLoading: isTeamLoading || permissions.isLoading,
     isError,
-    isLeaving,
+    isLeaving: isLeaving || isTransferLeaving,
     isTransferring,
     leaveTeam,
     transferAdmin,
+    transferAdminAndLeave,
   }
 }

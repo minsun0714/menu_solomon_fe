@@ -12,20 +12,19 @@ import type { Team, TeamMemberProfile } from '@/types/team'
 
 type TeamManagementTabProps = {
   team: Team
-  inviteCode?: string
   inviteLink?: string
   transferCandidates: TeamMemberProfile[]
   isTransferring: boolean
   onTransferAdmin: (memberId: string) => void
 }
 
-export function TeamManagementTab({ team, inviteCode, inviteLink, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
+export function TeamManagementTab({ team, inviteLink, transferCandidates, isTransferring, onTransferAdmin }: TeamManagementTabProps) {
   const navigate = useNavigate()
   const [nextAdminId, setNextAdminId] = useState('')
   const { isUpdating, isRegenerating, isDeleting, updateTeam, regenerateInviteCode, deleteTeam } = useTeamManagement(team.id)
   const { name, description } = team
 
-  const handleDelete = () => deleteTeam(() => navigate(ROUTES.MY_TEAMS))
+  const handleDelete = () => deleteTeam(() => navigate(ROUTES.LANDING))
   const handleTransfer = () => {
     onTransferAdmin(nextAdminId)
     setNextAdminId('')
@@ -66,13 +65,13 @@ export function TeamManagementTab({ team, inviteCode, inviteLink, transferCandid
 
         <Card>
           <CardHeader>
-            <CardTitle>초대 코드</CardTitle>
-            <CardDescription className="font-medium tracking-wide">{inviteCode}</CardDescription>
-            <CardDescription className="break-all">초대 링크: {inviteLink}</CardDescription>
+            <CardTitle>초대 링크</CardTitle>
+            <CardDescription>현재 초대 링크를 재발급하면 기존 링크는 더 이상 사용할 수 없습니다.</CardDescription>
+            <CardDescription className="break-all font-medium">{inviteLink}</CardDescription>
           </CardHeader>
           <CardContent>
             <ConfirmDialog
-              trigger={<Button variant="outline" disabled={isRegenerating}>코드 재발급</Button>}
+              trigger={<Button variant="outline" disabled={isRegenerating}>초대 링크 재발급</Button>}
               message={DIALOG_MESSAGES.REGENERATE_INVITE}
               destructive={false}
               onConfirm={regenerateInviteCode}

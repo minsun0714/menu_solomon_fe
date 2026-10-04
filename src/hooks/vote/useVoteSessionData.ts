@@ -14,7 +14,7 @@ export function useVoteSessionData(teamId: string, sessionId: string) {
 
   const winners = getVoteWinners(results)
   const winnerCandidates = candidates.filter(({ id }) => winners.some(({ candidateId }) => candidateId === id))
-  const currentUserBallot = ballots.find(({ teamMemberId }) => teamMemberId === currentMember?.id)
+  const currentUserBallots = ballots.filter(({ teamMemberId }) => teamMemberId === currentMember?.id)
   const isCreator = Boolean(session) && session?.createdByTeamMemberId === currentMember?.id
 
   return {
@@ -27,7 +27,7 @@ export function useVoteSessionData(teamId: string, sessionId: string) {
     winnerCandidates,
     isTied: isVoteTied(winners),
     currentMember,
-    currentUserBallot,
+    currentUserBallots,
     isCreator,
     isLoading: isSessionLoading || isCandidatesLoading || isResultsLoading || isMemberLoading,
     isError: isSessionError,

@@ -9,10 +9,10 @@ import type {
 } from '@/types/vote'
 
 export function calculateVoteResults(candidates: Pick<LunchCandidate, 'id'>[], ballots: LunchBallot[]): VoteResult[] {
-  const totalBallots = ballots.length
+  const voterCount = new Set(ballots.map(({ teamMemberId }) => teamMemberId)).size
   return candidates.map(({ id }) => {
     const voteCount = ballots.filter(({ candidateId }) => candidateId === id).length
-    const percentage = totalBallots === 0 ? 0 : Math.round((voteCount / totalBallots) * 100)
+    const percentage = voterCount === 0 ? 0 : Math.round((voteCount / voterCount) * 100)
     return { candidateId: id, voteCount, percentage }
   })
 }
@@ -35,8 +35,8 @@ export function isVoteOpen(session: LunchVoteSession, now: number): boolean {
   return session.status === VOTE_STATUS.OPEN && !isVotingExpired(session, now)
 }
 
-export function canEditVote(session: LunchVoteSession, isCreator: boolean): boolean {
-  return isCreator && session.status === VOTE_STATUS.OPEN
+export function canEditVote(session: LunchVoteSession, isTeamMember: boolean): boolean {
+  return isTeamMember && session.status === VOTE_STATUS.OPEN
 }
 
 export function canCastVote(session: LunchVoteSession, isParticipating: boolean, now: number): boolean {

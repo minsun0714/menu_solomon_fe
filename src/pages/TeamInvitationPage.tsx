@@ -20,7 +20,7 @@ export function TeamInvitationPage() {
   const handleOpenTeam = () => preview && navigate(ROUTES.TEAM_DETAIL(preview.id))
 
   if (isLoading) return <div className="mx-auto max-w-2xl space-y-6"><BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink><Skeleton className="h-72" /></div>
-  if (isError || !preview) return <div className="mx-auto max-w-2xl space-y-6"><BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink><ErrorState message="유효하지 않은 초대 코드입니다." /></div>
+  if (isError || !preview) return <div className="mx-auto max-w-2xl space-y-6"><BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink><ErrorState message="유효하지 않거나 만료된 초대 링크입니다." /></div>
 
   const { name, description, memberCount, members } = preview
 

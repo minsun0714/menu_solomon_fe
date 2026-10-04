@@ -68,10 +68,9 @@ export function getTeamOrThrow(teamId: string) {
 
 export function getMyMember(teamId: string) {
   const userId = requireUserId()
-  return findOrThrow(
-    db.members.find((member) => member.teamId === teamId && member.userId === userId),
-    '팀 멤버가 아닙니다.',
-  )
+  const member = db.members.find((item) => item.teamId === teamId && item.userId === userId)
+  if (!member) throw new ApiError('NOT_TEAM_MEMBER', '팀 멤버가 아닙니다.')
+  return member
 }
 
 export function getUserOrThrow(userId: string) {
