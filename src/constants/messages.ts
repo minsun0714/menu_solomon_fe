@@ -5,6 +5,7 @@ export const TOAST_MESSAGES = {
   TEAM_LEFT: '팀에서 나갔습니다.',
   TEAM_DELETED: '팀이 삭제되었습니다.',
   ADMIN_TRANSFERRED: '관리자가 변경되었습니다.',
+  OFFICE_SAVED: '사무실 위치를 저장했습니다.',
   INVITE_REGENERATED: '초대 링크가 재발급되었습니다.',
   INVITE_LINK_COPIED: '초대 링크를 복사했습니다.',
   RESTAURANT_ADDED: '식당이 추가되었습니다.',

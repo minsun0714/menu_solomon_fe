@@ -13,7 +13,7 @@ export function useVoteSession(teamId: string, sessionId: string) {
   const queryClient = useQueryClient()
   const now = useNow()
   const data = useVoteSessionData(teamId, sessionId)
-  const { data: participants = [] } = useVoteParticipantsQuery(sessionId)
+  const { data: participants = [] } = useVoteParticipantsQuery(teamId, sessionId)
   const { mutate: updateParticipation, isPending: isUpdatingParticipation } = useUpdateVoteParticipationMutation(sessionId, teamId)
   const { session, decision, currentMember, isCreator } = data
 

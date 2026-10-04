@@ -14,7 +14,7 @@ export function useCreateVoteMutation(teamId: string) {
 
 export function useUpdateVoteMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (request: UpdateVoteRequest) => voteService.updateVote(sessionId, request),
+    mutationFn: (request: UpdateVoteRequest) => voteService.updateVote(teamId, sessionId, request),
     invalidateKeys: () => [queryKeys.vote.detail(sessionId), queryKeys.vote.sessions(teamId)],
     successMessage: TOAST_MESSAGES.VOTE_UPDATED,
   })
@@ -22,7 +22,7 @@ export function useUpdateVoteMutation(sessionId: string, teamId: string) {
 
 export function useDeleteVoteMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: () => voteService.deleteVote(sessionId),
+    mutationFn: () => voteService.deleteVote(teamId, sessionId),
     invalidateKeys: () => [queryKeys.vote.sessions(teamId), queryKeys.team.all, queryKeys.history.all],
     successMessage: TOAST_MESSAGES.VOTE_DELETED,
   })
@@ -30,7 +30,7 @@ export function useDeleteVoteMutation(sessionId: string, teamId: string) {
 
 export function useRevoteMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (candidateIds?: string[]) => voteService.revote(sessionId, candidateIds),
+    mutationFn: (candidateIds?: string[]) => voteService.restart(teamId, sessionId, candidateIds),
     invalidateKeys: () => [
       queryKeys.vote.detail(sessionId),
       queryKeys.vote.results(sessionId),

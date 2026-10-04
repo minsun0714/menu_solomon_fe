@@ -30,10 +30,10 @@ export function useVoteDecision(teamId: string, sessionId: string) {
     isPending: isConfirming || isUpdating || isDeleting,
     confirm: (restaurantId: string) => confirm(restaurantId),
     editDecision: (restaurantId: string) => {
-      if (decision) update({ decisionId: decision.id, restaurantId })
+      if (decision) update(restaurantId)
     },
     deleteDecision: () => {
-      if (decision) remove(decision.id)
+      if (decision) remove(undefined)
     },
   }
 }

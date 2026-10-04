@@ -1,22 +1,23 @@
 import { useState } from 'react'
 import { filterRestaurants, getRestaurantCategoryCounts, ALL_CATEGORIES, RESTAURANT_SORT, type RestaurantSort } from '@/domain/restaurantRules'
 import { useAddTeamRestaurantMutation, useDeleteTeamRestaurantMutation } from './mutations/useRestaurantMutations'
-import { useRestaurantSearchQuery } from './queries/useRestaurantSearchQuery'
+import { usePlaceSearchQuery } from './queries/usePlaceSearchQuery'
 import { useTeamRestaurantsQuery } from './queries/useTeamRestaurantsQuery'
 
 export function useTeamRestaurants(teamId: string) {
   const [keyword, setKeyword] = useState('')
   const [category, setCategory] = useState<string>(ALL_CATEGORIES)
   const [sort, setSort] = useState<RestaurantSort>(RESTAURANT_SORT.RATING_DESC)
-  const { data: restaurants = [], isLoading, isError } = useTeamRestaurantsQuery(teamId)
+  const { data, isLoading, isError } = useTeamRestaurantsQuery(teamId)
+  const restaurants = data?.restaurants ?? []
   const { mutate: add, isPending: isAdding } = useAddTeamRestaurantMutation(teamId)
   const { mutate: remove, isPending: isDeleting } = useDeleteTeamRestaurantMutation(teamId)
 
   return {
     restaurants: filterRestaurants(restaurants, keyword, category, sort),
-    totalCount: restaurants.length,
-    categoryCounts: getRestaurantCategoryCounts(restaurants),
-    registeredRestaurantIds: restaurants.map(({ restaurantId }) => restaurantId),
+    totalCount: data?.totalCount ?? 0,
+    categoryCounts: getRestaurantCategoryCounts(data?.categoryCounts ?? {}),
+    registeredKakaoPlaceIds: restaurants.map(({ restaurant }) => restaurant.kakaoPlaceId),
     keyword,
     category,
     sort,
@@ -27,7 +28,7 @@ export function useTeamRestaurants(teamId: string) {
     isError,
     isAdding,
     isDeleting,
-    addRestaurant: (restaurantId: string, onAdded?: () => void) => add(restaurantId, { onSuccess: onAdded }),
+    addRestaurant: (kakaoPlaceId: string, onAdded?: () => void) => add(kakaoPlaceId, { onSuccess: onAdded }),
     deleteRestaurant: (teamRestaurantId: string) => remove(teamRestaurantId),
   }
 }
@@ -36,7 +37,7 @@ export function useRestaurantCatalogSearch() {
   const [keyword, setKeyword] = useState('')
   const [submittedKeyword, setSubmittedKeyword] = useState('')
   const [page, setPage] = useState(1)
-  const { data, isFetching } = useRestaurantSearchQuery(submittedKeyword, page)
+  const { data, isFetching } = usePlaceSearchQuery(submittedKeyword, page)
 
   const search = () => {
     const nextKeyword = keyword.trim()

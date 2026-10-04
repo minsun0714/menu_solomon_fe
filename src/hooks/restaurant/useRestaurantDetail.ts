@@ -2,7 +2,7 @@ import { useReviews } from '@/hooks/review/useReviews'
 import { useRestaurantDetailQuery } from './queries/useRestaurantDetailQuery'
 
 export function useRestaurantDetail(teamId: string, teamRestaurantId: string) {
-  const { data: restaurant, isLoading: isRestaurantLoading, isError: isRestaurantError } = useRestaurantDetailQuery(teamRestaurantId)
+  const { data: restaurant, isLoading: isRestaurantLoading, isError: isRestaurantError } = useRestaurantDetailQuery(teamId, teamRestaurantId)
   const reviewState = useReviews(teamId, teamRestaurantId)
 
   return {

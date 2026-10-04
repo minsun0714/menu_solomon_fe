@@ -7,13 +7,13 @@ import { Input } from '@/components/ui/input'
 import { useRestaurantCatalogSearch } from '@/hooks/restaurant/useTeamRestaurants'
 
 type AddRestaurantDialogProps = {
-  registeredRestaurantIds: string[]
+  registeredKakaoPlaceIds: string[]
   isAdding: boolean
-  onAdd: (restaurantId: string, onAdded: () => void) => void
+  onAdd: (kakaoPlaceId: string, onAdded: () => void) => void
   triggerLabel?: string
 }
 
-export function AddRestaurantDialog({ registeredRestaurantIds, isAdding, onAdd, triggerLabel = '식당 추가' }: AddRestaurantDialogProps) {
+export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, triggerLabel = '식당 추가' }: AddRestaurantDialogProps) {
   const [open, setOpen] = useState(false)
   const {
     keyword, setKeyword, submittedKeyword, search, reset, results, pagination, page, setPage, isLoading,
@@ -68,10 +68,10 @@ export function AddRestaurantDialog({ registeredRestaurantIds, isAdding, onAdd, 
                 {!isLoading && results.length === 0 && (
                   <p className="py-16 text-center text-sm text-muted-foreground">검색 결과가 없어요. 다른 검색어를 입력해 보세요.</p>
                 )}
-                {results.map(({ id, name, category, address }) => {
-                  const registered = registeredRestaurantIds.includes(id)
+                {results.map(({ kakaoPlaceId, name, category, address }) => {
+                  const registered = registeredKakaoPlaceIds.includes(kakaoPlaceId)
                   return (
-                    <div key={id} className="flex items-center justify-between gap-3 rounded-xl border p-3.5">
+                    <div key={kakaoPlaceId} className="flex items-center justify-between gap-3 rounded-xl border p-3.5">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="truncate text-sm font-semibold">{name}</p>
@@ -85,7 +85,7 @@ export function AddRestaurantDialog({ registeredRestaurantIds, isAdding, onAdd, 
                         size="sm"
                         variant={registered ? 'secondary' : 'default'}
                         disabled={registered || isAdding}
-                        onClick={() => onAdd(id, () => handleOpenChange(false))}
+                        onClick={() => onAdd(kakaoPlaceId, () => handleOpenChange(false))}
                       >
                         {registered ? '추가됨' : '추가'}
                       </Button>

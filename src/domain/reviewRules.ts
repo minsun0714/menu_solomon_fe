@@ -1,20 +1,11 @@
 import { MAX_RATING, MAX_REVIEW_LENGTH, MIN_RATING } from '@/constants/review'
-import type { Review, ReviewRequest } from '@/types/review'
+import type { ReviewRequest } from '@/types/review'
 
-export function findMemberReview<T extends Review>(reviews: T[], teamMemberId: string | undefined): T | undefined {
-  if (!teamMemberId) return undefined
-  return reviews.find((review) => review.teamMemberId === teamMemberId)
+export function findMyReview<T extends { isMine: boolean }>(reviews: T[]): T | undefined {
+  return reviews.find(({ isMine }) => isMine)
 }
 
-export function hasExistingReview(reviews: Review[], teamMemberId: string | undefined): boolean {
-  return findMemberReview(reviews, teamMemberId) !== undefined
-}
-
-export function canEditReview(review: Review, teamMemberId: string | undefined): boolean {
-  return review.teamMemberId === teamMemberId
-}
-
-export function getAverageRating(reviews: Pick<Review, 'rating'>[]): number {
+export function getAverageRating(reviews: { rating: number }[]): number {
   if (reviews.length === 0) return 0
   const total = reviews.reduce((sum, { rating }) => sum + rating, 0)
   return Math.round((total / reviews.length) * 10) / 10

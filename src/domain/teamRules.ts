@@ -1,5 +1,3 @@
-import { INVITE_BASE_URL } from '@/constants/config'
-import { ROUTES } from '@/constants/routes'
 import { TEAM_ROLE } from '@/constants/team'
 import type { TeamMember } from '@/types/team'
 
@@ -18,8 +16,4 @@ export function requiresAdminTransfer(members: TeamMember[], member: TeamMember 
 
 export function canLeaveTeam(members: TeamMember[], member: TeamMember | undefined): boolean {
   return members.length > 0 && Boolean(member)
-}
-
-export function buildInviteLink(inviteCode: string): string {
-  return `${INVITE_BASE_URL}${ROUTES.INVITATION(inviteCode)}`
 }

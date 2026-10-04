@@ -1,9 +1,11 @@
+import { useAuth } from '@/hooks/auth/useAuth'
 import { useCreateTeamMutation } from './mutations/useTeamMutations'
 import { useMyTeamsQuery } from './queries/useMyTeamsQuery'
-import type { TeamRequest, TeamSort } from '@/types/team'
+import type { TeamRequest } from '@/types/team'
 
-export function useMyTeams(sort: TeamSort = 'LATEST_LUNCH') {
-  const { data: teams = [], isLoading, isError, refetch } = useMyTeamsQuery(sort)
+export function useMyTeams() {
+  const { isLoading: isAuthLoading } = useAuth()
+  const { data: teams = [], isLoading: isTeamsLoading, isError, refetch } = useMyTeamsQuery()
   const { mutate, isPending: isCreating } = useCreateTeamMutation()
 
   const createTeam = (request: TeamRequest, onCreated?: (teamId: string) => void) =>
@@ -11,7 +13,7 @@ export function useMyTeams(sort: TeamSort = 'LATEST_LUNCH') {
 
   return {
     teams,
-    isLoading,
+    isLoading: isAuthLoading || isTeamsLoading,
     isError,
     isCreating,
     refetch,

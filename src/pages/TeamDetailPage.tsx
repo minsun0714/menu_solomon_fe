@@ -33,7 +33,6 @@ export function TeamDetailPage() {
   const transferCandidates = members.filter(({ id }) => id !== currentMember?.id)
   const activeVotes = voteSessions.filter(({ status }) => status === VOTE_STATUS.OPEN)
   const unvotedCount = activeVotes.filter(({ myBallotCandidateIds }) => myBallotCandidateIds.length === 0).length
-  const teamReviewCount = teamRestaurants?.reduce((sum, { reviewCount }) => sum + reviewCount, 0)
 
   if (isLoading) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><Skeleton className="h-40" /></div>
   if (isError || !team) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><ErrorState message="팀에 접근할 수 없습니다. 초대 링크로 참여해 주세요." /></div>
@@ -45,8 +44,8 @@ export function TeamDetailPage() {
         team={team}
         members={members}
         inviteLink={inviteLink}
-        restaurantCount={teamRestaurants?.length}
-        reviewCount={teamReviewCount}
+        restaurantCount={teamRestaurants?.totalCount}
+        reviewCount={teamRestaurants?.totalReviewCount}
         isManaging={isManaging}
         onToggleManagement={isAdmin ? () => setIsManaging((value) => !value) : undefined}
         canLeave={canLeave}

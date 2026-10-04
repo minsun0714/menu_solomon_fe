@@ -4,9 +4,9 @@ import { useCandidatesQuery, useVoteResultsQuery, useVoteSessionQuery } from './
 
 /** Cache-backed session data shared by the vote feature hooks. */
 export function useVoteSessionData(teamId: string, sessionId: string) {
-  const { data: detail, isLoading: isSessionLoading, isError: isSessionError } = useVoteSessionQuery(sessionId)
-  const { data: candidates = [], isLoading: isCandidatesLoading } = useCandidatesQuery(sessionId)
-  const { data: snapshot, isLoading: isResultsLoading } = useVoteResultsQuery(sessionId)
+  const { data: detail, isLoading: isSessionLoading, isError: isSessionError } = useVoteSessionQuery(teamId, sessionId)
+  const { data: candidates = [], isLoading: isCandidatesLoading } = useCandidatesQuery(teamId, sessionId)
+  const { data: snapshot, isLoading: isResultsLoading } = useVoteResultsQuery(teamId, sessionId)
   const { currentMember, isLoading: isMemberLoading } = useTeamPermissions(teamId)
 
   const { session, creatorNickname, decision = null } = detail ?? {}

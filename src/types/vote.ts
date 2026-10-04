@@ -6,7 +6,7 @@ export type ConfirmationType = 'AUTO' | 'MANUAL'
 
 export type LunchVoteSession = {
   id: string
-  name?: string
+  name?: string | null
   teamId: string
   createdByTeamMemberId: string
   status: VoteStatus
@@ -80,6 +80,11 @@ export type VoteResultsSnapshot = {
 
 export type CreateVoteRequest = { closesAt: string }
 export type UpdateVoteRequest = { closesAt?: string; name?: string }
+
+export type RecommendationPage = {
+  items: RecommendedCandidate[]
+  nextCursor: number | null
+}
 
 export type RecommendedCandidate = {
   restaurant: Restaurant

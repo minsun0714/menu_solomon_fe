@@ -1,5 +1,4 @@
 import { useLeaveTeamMutation, useTransferAdminAndLeaveMutation, useTransferAdminMutation } from './mutations/useTeamMutations'
-import { buildInviteLink } from '@/domain/teamRules'
 import { useTeamDetailQuery } from './queries/useTeamDetailQuery'
 import { useTeamInviteQuery } from './queries/useTeamInviteQuery'
 import { useTeamPermissions } from './useTeamPermissions'
@@ -19,8 +18,7 @@ export function useTeamDetail(teamId: string) {
 
   return {
     team,
-    inviteCode: invite?.inviteCode,
-    inviteLink: invite ? buildInviteLink(invite.inviteCode) : undefined,
+    inviteLink: invite?.inviteUrl,
     ...permissions,
     isLoading: isTeamLoading || permissions.isLoading,
     isError,
