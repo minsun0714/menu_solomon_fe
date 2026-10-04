@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MIN_RATING } from '@/constants/review'
+import { MAX_RATING } from '@/constants/review'
 import { validateReview } from '@/domain/reviewRules'
 import type { Review, ReviewRequest } from '@/types/review'
 
@@ -9,7 +9,7 @@ type UseReviewFormParams = {
 }
 
 export function useReviewForm({ initialReview, onSubmit }: UseReviewFormParams) {
-  const [rating, setRating] = useState(initialReview?.rating ?? MIN_RATING)
+  const [rating, setRating] = useState(initialReview?.rating ?? MAX_RATING)
   const [content, setContent] = useState(initialReview?.content ?? '')
   const [error, setError] = useState<string | null>(null)
 

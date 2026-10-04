@@ -13,7 +13,8 @@ export const queryKeys = {
   },
   restaurant: {
     all: ['restaurant'] as const,
-    list: (teamId: string) => ['restaurant', 'list', teamId] as const,
+    lists: (teamId: string) => ['restaurant', 'list', teamId] as const,
+    list: (teamId: string, keyword = '', category = '', sort = '') => ['restaurant', 'list', teamId, keyword, category, sort] as const,
     detail: (teamId: string, teamRestaurantId: string) => ['restaurant', 'detail', teamId, teamRestaurantId] as const,
   },
   place: {

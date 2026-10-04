@@ -1,4 +1,5 @@
 import { api } from '@/lib/api'
+import { ALL_CATEGORIES, type RestaurantSort } from '@/domain/restaurantRules'
 import type { Restaurant, TeamRestaurantList, TeamRestaurantSummary } from '@/types/restaurant'
 
 type ApiLatestReview = { nickname: string; rating: number; content: string; updatedAt: string }
@@ -32,8 +33,12 @@ function toSummary(item: TeamRestaurantResponse): TeamRestaurantSummary {
 type ListResponse = Omit<TeamRestaurantList, 'restaurants'> & { restaurants: TeamRestaurantResponse[] }
 
 export const restaurantService = {
-  async getTeamRestaurants(teamId: string): Promise<TeamRestaurantList> {
-    const { restaurants, ...rest } = await api.get<ListResponse>(`/teams/${teamId}/restaurants`)
+  async getTeamRestaurants(teamId: string, keyword = '', category = ALL_CATEGORIES, sort?: RestaurantSort): Promise<TeamRestaurantList> {
+    const { restaurants, ...rest } = await api.get<ListResponse>(`/teams/${teamId}/restaurants`, {
+      keyword: keyword.trim() || undefined,
+      category: category === ALL_CATEGORIES ? undefined : category,
+      sort,
+    })
     return { ...rest, restaurants: restaurants.map(toSummary) }
   },
 
