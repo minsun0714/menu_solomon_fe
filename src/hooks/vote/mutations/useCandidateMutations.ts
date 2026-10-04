@@ -4,11 +4,11 @@ import { queryKeys } from '@/queries/queryKeys'
 import { voteService } from '@/services/voteService'
 import type { CandidateSource } from '@/types/vote'
 
-type AddCandidateVariables = { restaurantId: string; source?: CandidateSource }
+type AddCandidateVariables = { kakaoPlaceId: string; source?: CandidateSource }
 
 export function useAddCandidateMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: ({ restaurantId, source }: AddCandidateVariables) => voteService.addCandidate(sessionId, restaurantId, source),
+    mutationFn: ({ kakaoPlaceId, source }: AddCandidateVariables) => voteService.addCandidate(teamId, sessionId, kakaoPlaceId, source),
     invalidateKeys: () => [
       queryKeys.vote.candidates(sessionId),
       queryKeys.vote.results(sessionId),
@@ -21,7 +21,7 @@ export function useAddCandidateMutation(sessionId: string, teamId: string) {
 
 export function useDeleteCandidateMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (candidateId: string) => voteService.deleteCandidate(sessionId, candidateId),
+    mutationFn: (candidateId: string) => voteService.deleteCandidate(teamId, sessionId, candidateId),
     invalidateKeys: () => [
       queryKeys.vote.candidates(sessionId),
       queryKeys.vote.results(sessionId),

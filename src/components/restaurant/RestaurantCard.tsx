@@ -20,12 +20,13 @@ import { RestaurantReviewsDialog } from './RestaurantReviewsDialog'
 import type { TeamRestaurantSummary } from '@/types/restaurant'
 
 type RestaurantCardProps = {
+  teamId: string
   item: TeamRestaurantSummary
   isDeleting: boolean
   onDelete: (teamRestaurantId: string) => void
 }
 
-export function RestaurantCard({ item, isDeleting, onDelete }: RestaurantCardProps) {
+export function RestaurantCard({ teamId, item, isDeleting, onDelete }: RestaurantCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const { id, restaurant, averageRating, reviewCount, registeredByNickname, latestReview } = item
   const { name, category, address } = restaurant
@@ -58,6 +59,7 @@ export function RestaurantCard({ item, isDeleting, onDelete }: RestaurantCardPro
         </div>
         <div className="flex items-start gap-2 pt-1">
           <RestaurantReviewsDialog
+            teamId={teamId}
             teamRestaurantId={id}
             restaurantName={name}
             reviewCount={reviewCount}

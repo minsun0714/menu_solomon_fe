@@ -1,7 +1,8 @@
-import { db, getUserOrThrow, simulateLatency } from '@/mocks/api/db'
+import { api } from '@/lib/api'
+import type { User } from '@/types/user'
 
 export const authService = {
   getCurrentUser() {
-    return simulateLatency(() => getUserOrThrow(db.currentUserId))
+    return api.get<User>('/session/me')
   },
 }

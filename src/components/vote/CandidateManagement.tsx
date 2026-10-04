@@ -23,8 +23,8 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
     isAdding, refreshRecommendations, addCandidate, addRecommended,
   } = useCandidateManagement(teamId, sessionId, canAdd, showRecommendations)
 
-  const candidateRestaurantIds = candidates.map(({ restaurantId }) => restaurantId)
-  const selectableResults = searchResults.filter(({ id }) => !candidateRestaurantIds.includes(id))
+  const candidateKakaoPlaceIds = candidates.map(({ restaurant }) => restaurant.kakaoPlaceId)
+  const selectableResults = searchResults.filter(({ kakaoPlaceId }) => !candidateKakaoPlaceIds.includes(kakaoPlaceId))
 
   if (!canAdd) return null
 
@@ -69,7 +69,7 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
                   size="sm"
                   variant="outline"
                   disabled={isAdding}
-                  onClick={() => addRecommended(restaurant.id, () => setShowRecommendations(false))}
+                  onClick={() => addRecommended(restaurant.kakaoPlaceId, () => setShowRecommendations(false))}
                 >
                   추가
                 </Button>
@@ -82,18 +82,18 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
         <DialogContent>
           <DialogHeader>
             <DialogTitle>후보 추가</DialogTitle>
-            <DialogDescription>식당 목록(목업)에서 검색해 후보로 추가하세요.</DialogDescription>
+            <DialogDescription>카카오맵에서 식당을 검색해 후보로 추가하세요.</DialogDescription>
           </DialogHeader>
-          <Input placeholder="식당 이름, 카테고리, 주소 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+          <Input placeholder="식당 이름, 메뉴, 지역으로 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
           <div className="grid max-h-72 gap-2 overflow-y-auto">
             {selectableResults.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">검색 결과가 없어요.</p>}
-            {selectableResults.map(({ id, name, category, address }) => (
-              <div key={id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+            {selectableResults.map(({ kakaoPlaceId, name, category, address }) => (
+              <div key={kakaoPlaceId} className="flex items-center justify-between gap-3 rounded-lg border p-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{name} <span className="text-muted-foreground">· {category}</span></p>
                   <p className="truncate text-xs text-muted-foreground">{address}</p>
                 </div>
-                <Button size="sm" disabled={isAdding} onClick={() => addCandidate(id, () => setOpen(false))}>추가</Button>
+                <Button size="sm" disabled={isAdding} onClick={() => addCandidate(kakaoPlaceId, () => setOpen(false))}>추가</Button>
               </div>
             ))}
           </div>

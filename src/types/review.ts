@@ -1,14 +1,14 @@
 export type Review = {
   id: string
-  teamRestaurantId: string
-  teamMemberId: string
+  teamRestaurantId?: string
   rating: number
   content: string
+  authorNickname: string
   createdAt: string
   updatedAt: string
 }
 
-export type ReviewWithAuthor = Review & { authorNickname: string }
+export type ReviewWithAuthor = Review & { isMine: boolean }
 
 export type ReviewRequest = {
   rating: number

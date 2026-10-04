@@ -8,15 +8,16 @@ import { useReviewsQuery } from '@/hooks/review/queries/useReviewsQuery'
 import { formatDate } from '@/lib/date'
 
 type RestaurantReviewsDialogProps = {
+  teamId: string
   teamRestaurantId: string
   restaurantName: string
   reviewCount: number
   trigger: ReactNode
 }
 
-export function RestaurantReviewsDialog({ teamRestaurantId, restaurantName, reviewCount, trigger }: RestaurantReviewsDialogProps) {
+export function RestaurantReviewsDialog({ teamId, teamRestaurantId, restaurantName, reviewCount, trigger }: RestaurantReviewsDialogProps) {
   const [open, setOpen] = useState(false)
-  const { data: reviews = [], isLoading, isError } = useReviewsQuery(teamRestaurantId, open)
+  const { data: reviews = [], isLoading, isError } = useReviewsQuery(teamId, teamRestaurantId, open)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

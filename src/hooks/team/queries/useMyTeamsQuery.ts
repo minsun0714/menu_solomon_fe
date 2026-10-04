@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/auth/useAuth'
 import { queryKeys } from '@/queries/queryKeys'
 import { teamService } from '@/services/teamService'
 
-import type { TeamSort } from '@/types/team'
-
-export function useMyTeamsQuery(sort: TeamSort) {
-  return useQuery({ queryKey: queryKeys.team.mine(sort), queryFn: () => teamService.getMyTeams(sort) })
+export function useMyTeamsQuery() {
+  const { user } = useAuth()
+  return useQuery({ queryKey: queryKeys.team.mine, queryFn: () => teamService.getMyTeams(), enabled: Boolean(user) })
 }

@@ -11,7 +11,6 @@ import type { Review, ReviewRequest, ReviewWithAuthor } from '@/types/review'
 type ReviewSectionProps = {
   reviews: ReviewWithAuthor[]
   currentUserReview: Review | undefined
-  currentMemberId: string | undefined
   hasReview: boolean
   isSaving: boolean
   isDeleting: boolean
@@ -19,7 +18,7 @@ type ReviewSectionProps = {
   onDelete: (reviewId: string) => void
 }
 
-export function ReviewSection({ reviews, currentUserReview, currentMemberId, hasReview, isSaving, isDeleting, onSave, onDelete }: ReviewSectionProps) {
+export function ReviewSection({ reviews, currentUserReview, hasReview, isSaving, isDeleting, onSave, onDelete }: ReviewSectionProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const closeForm = () => setIsFormOpen(false)
 
@@ -45,7 +44,7 @@ export function ReviewSection({ reviews, currentUserReview, currentMemberId, has
       ) : (
         <ul className="grid gap-3">
           {reviews.map((review) => (
-            <ReviewItem key={review.id} review={review} isOwn={review.teamMemberId === currentMemberId} isDeleting={isDeleting} onEdit={handleOpenForm} onDelete={onDelete} />
+            <ReviewItem key={review.id} review={review} isOwn={review.isMine} isDeleting={isDeleting} onEdit={handleOpenForm} onDelete={onDelete} />
           ))}
         </ul>
       )}

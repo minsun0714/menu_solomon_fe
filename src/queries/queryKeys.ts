@@ -4,7 +4,8 @@ export const queryKeys = {
   },
   team: {
     all: ['team'] as const,
-    mine: (sort: string = 'LATEST_LUNCH') => ['team', 'mine', sort] as const,
+    mine: ['team', 'mine'] as const,
+    office: (teamId: string) => ['team', 'office', teamId] as const,
     detail: (teamId: string) => ['team', 'detail', teamId] as const,
     invite: (teamId: string) => ['team', 'invite', teamId] as const,
     members: (teamId: string) => ['team', 'members', teamId] as const,
@@ -13,12 +14,14 @@ export const queryKeys = {
   restaurant: {
     all: ['restaurant'] as const,
     list: (teamId: string) => ['restaurant', 'list', teamId] as const,
-    detail: (teamRestaurantId: string) => ['restaurant', 'detail', teamRestaurantId] as const,
-    search: (keyword: string, page: number) => ['restaurant', 'search', keyword, page] as const,
+    detail: (teamId: string, teamRestaurantId: string) => ['restaurant', 'detail', teamId, teamRestaurantId] as const,
+  },
+  place: {
+    search: (keyword: string, page: number) => ['place', 'search', keyword, page] as const,
   },
   review: {
     all: ['review'] as const,
-    list: (teamRestaurantId: string) => ['review', 'list', teamRestaurantId] as const,
+    list: (teamId: string, teamRestaurantId: string) => ['review', 'list', teamId, teamRestaurantId] as const,
   },
   vote: {
     all: ['vote'] as const,

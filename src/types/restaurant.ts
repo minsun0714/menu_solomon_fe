@@ -1,5 +1,3 @@
-import type { ReviewWithAuthor } from './review'
-
 export type Restaurant = {
   id: string
   name: string
@@ -7,15 +5,8 @@ export type Restaurant = {
   latitude: number
   longitude: number
   category: string
-}
-
-export type RestaurantSearchPage = {
-  items: Restaurant[]
-  page: number
-  pageSize: number
-  totalCount: number
-  totalPages: number
-  hasNextPage: boolean
+  kakaoPlaceId: string
+  kakaoPlaceUrl: string
 }
 
 export type OfficeLocation = {
@@ -26,26 +17,41 @@ export type OfficeLocation = {
   longitude: number
 }
 
+export type Place = OfficeLocation & {
+  category: string
+  kakaoPlaceUrl: string
+}
+
 export type PlaceSearchPage = {
-  items: OfficeLocation[]
+  items: Place[]
   page: number
+  pageSize: number
   totalPages: number
   totalCount: number
   hasNextPage: boolean
 }
 
-export type TeamRestaurant = {
+export type TeamRestaurantSummary = {
   id: string
-  teamId: string
   restaurantId: string
-  registeredByTeamMemberId: string
-  createdAt: string
-}
-
-export type TeamRestaurantSummary = TeamRestaurant & {
   restaurant: Restaurant
   registeredByNickname: string
+  createdAt: string
   averageRating: number
   reviewCount: number
-  latestReview: ReviewWithAuthor | null
+  latestReview: LatestReview | null
+}
+
+export type LatestReview = {
+  authorNickname: string
+  rating: number
+  content: string
+  updatedAt: string
+}
+
+export type TeamRestaurantList = {
+  restaurants: TeamRestaurantSummary[]
+  totalCount: number
+  totalReviewCount: number
+  categoryCounts: Record<string, number>
 }

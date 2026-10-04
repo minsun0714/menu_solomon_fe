@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Plus, UtensilsCrossed } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '@/components/common/ErrorState'
@@ -6,16 +5,13 @@ import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { CreateTeamDialog } from '@/components/team/CreateTeamDialog'
 import { TeamCardList } from '@/components/team/TeamCardList'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { APP_NAME } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import { useMyTeams } from '@/hooks/team/useMyTeams'
-import type { TeamSort } from '@/types/team'
 
 export function LandingPage() {
   const navigate = useNavigate()
-  const [sort, setSort] = useState<TeamSort>('LATEST_LUNCH')
-  const { teams, isLoading, isError, isCreating, refetch, createTeam } = useMyTeams(sort)
+  const { teams, isLoading, isError, isCreating, refetch, createTeam } = useMyTeams()
 
   const handleCreate = (...args: Parameters<typeof createTeam>) =>
     createTeam(args[0], (teamId) => {
@@ -66,15 +62,6 @@ export function LandingPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-medium">참여 중인 팀 <span className="text-primary">{teams.length}</span></p>
             <div className="flex gap-2">
-              <Select value={sort} onValueChange={(value) => setSort(value as TeamSort)}>
-                <SelectTrigger aria-label="팀 정렬" className="min-w-0 flex-1 sm:w-40"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LATEST_LUNCH">최근 점심 순</SelectItem>
-                  <SelectItem value="NAME">이름 순</SelectItem>
-                  <SelectItem value="ACTIVE_VOTES">진행 중 투표 순</SelectItem>
-                  <SelectItem value="MEMBER_COUNT">멤버 많은 순</SelectItem>
-                </SelectContent>
-              </Select>
               <CreateTeamDialog isCreating={isCreating} onCreate={handleCreate} />
             </div>
           </div>

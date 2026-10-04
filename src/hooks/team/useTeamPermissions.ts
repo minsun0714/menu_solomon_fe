@@ -1,12 +1,10 @@
-import { useAuth } from '@/hooks/auth/useAuth'
 import { canLeaveTeam, canManageTeam, requiresAdminTransfer } from '@/domain/teamRules'
 import { useTeamMembersQuery } from './queries/useTeamMembersQuery'
 
 export function useTeamPermissions(teamId: string) {
-  const { user } = useAuth()
   const { data: members = [], isLoading } = useTeamMembersQuery(teamId)
 
-  const currentMember = members.find(({ userId }) => userId === user?.id)
+  const currentMember = members.find(({ isMe }) => isMe)
 
   return {
     members,

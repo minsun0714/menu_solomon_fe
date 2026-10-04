@@ -1,7 +1,6 @@
 import type { User } from './user'
 
 export type TeamRole = 'ADMIN' | 'MEMBER'
-export type TeamSort = 'LATEST_LUNCH' | 'NAME' | 'ACTIVE_VOTES' | 'MEMBER_COUNT'
 
 export type Team = {
   id: string
@@ -14,7 +13,7 @@ export type TeamDetail = Team & {
 }
 
 export type TeamInvite = {
-  inviteCode: string
+  inviteUrl: string
 }
 
 export type TeamMember = {
@@ -25,13 +24,11 @@ export type TeamMember = {
   joinedAt: string
 }
 
-export type TeamMemberProfile = TeamMember & { user: User }
+export type TeamMemberProfile = TeamMember & { user: Pick<User, 'id' | 'nickname'>; isMe?: boolean }
 
 export type TeamSummary = Team & {
   memberCount: number
   myRole: TeamRole
-  activeVoteCount: number
-  latestLunch: { restaurantName: string; confirmedAt: string } | null
 }
 
 export type TeamPreview = Team & {

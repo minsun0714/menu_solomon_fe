@@ -14,17 +14,15 @@ function decisionInvalidation(sessionId: string, teamId: string) {
 
 export function useConfirmLunchMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (restaurantId: string) => voteService.confirmLunch(sessionId, restaurantId),
+    mutationFn: (restaurantId: string) => voteService.confirmLunch(teamId, sessionId, restaurantId),
     invalidateKeys: decisionInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.LUNCH_CONFIRMED,
   })
 }
 
-type UpdateDecisionVariables = { decisionId: string; restaurantId: string }
-
 export function useUpdateDecisionMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: ({ decisionId, restaurantId }: UpdateDecisionVariables) => voteService.updateDecision(decisionId, restaurantId),
+    mutationFn: (restaurantId: string) => voteService.updateDecision(teamId, sessionId, restaurantId),
     invalidateKeys: decisionInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.DECISION_UPDATED,
   })
@@ -32,7 +30,7 @@ export function useUpdateDecisionMutation(sessionId: string, teamId: string) {
 
 export function useDeleteDecisionMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (decisionId: string) => voteService.deleteDecision(decisionId),
+    mutationFn: () => voteService.deleteDecision(teamId, sessionId),
     invalidateKeys: decisionInvalidation(sessionId, teamId),
     successMessage: TOAST_MESSAGES.DECISION_DELETED,
   })

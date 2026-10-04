@@ -5,7 +5,7 @@ import { restaurantService } from '@/services/restaurantService'
 
 export function useAddTeamRestaurantMutation(teamId: string) {
   return useAppMutation({
-    mutationFn: (restaurantId: string) => restaurantService.addTeamRestaurant(teamId, restaurantId),
+    mutationFn: (kakaoPlaceId: string) => restaurantService.addTeamRestaurant(teamId, kakaoPlaceId),
     invalidateKeys: () => [queryKeys.restaurant.list(teamId)],
     successMessage: TOAST_MESSAGES.RESTAURANT_ADDED,
   })
@@ -13,7 +13,7 @@ export function useAddTeamRestaurantMutation(teamId: string) {
 
 export function useDeleteTeamRestaurantMutation(teamId: string) {
   return useAppMutation({
-    mutationFn: (teamRestaurantId: string) => restaurantService.deleteTeamRestaurant(teamRestaurantId),
+    mutationFn: (teamRestaurantId: string) => restaurantService.deleteTeamRestaurant(teamId, teamRestaurantId),
     invalidateKeys: () => [queryKeys.restaurant.list(teamId), queryKeys.review.all],
     successMessage: TOAST_MESSAGES.RESTAURANT_REMOVED,
   })

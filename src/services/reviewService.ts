@@ -1,62 +1,20 @@
-import { validateReview } from '@/domain/reviewRules'
-import { ApiError } from '@/mocks/api/errors'
-import { db, findOrThrow, getMemberNickname, getMyMember, nextId, simulateLatency } from '@/mocks/api/db'
+import { api } from '@/lib/api'
 import type { Review, ReviewRequest, ReviewWithAuthor } from '@/types/review'
 
-function assertValid(request: ReviewRequest) {
-  const message = validateReview(request)
-  if (message) throw new ApiError('BAD_REQUEST', message)
-}
-
-function getOwnReview(reviewId: string): Review {
-  const review = findOrThrow(db.reviews.find(({ id }) => id === reviewId), '리뷰를 찾을 수 없습니다.')
-  const teamRestaurant = findOrThrow(db.teamRestaurants.find(({ id }) => id === review.teamRestaurantId), '식당을 찾을 수 없습니다.')
-  if (getMyMember(teamRestaurant.teamId).id !== review.teamMemberId) {
-    throw new ApiError('FORBIDDEN', '본인의 리뷰만 수정할 수 있습니다.')
-  }
-  return review
-}
+const reviewPath = (teamId: string, teamRestaurantId: string) =>
+  `/teams/${teamId}/restaurants/${teamRestaurantId}/reviews`
 
 export const reviewService = {
-  getReviews(teamRestaurantId: string): Promise<ReviewWithAuthor[]> {
-    return simulateLatency(() => {
-      const teamRestaurant = findOrThrow(db.teamRestaurants.find(({ id }) => id === teamRestaurantId), '식당을 찾을 수 없습니다.')
-      getMyMember(teamRestaurant.teamId)
-      return db.reviews
-        .filter((review) => review.teamRestaurantId === teamRestaurantId)
-        .map((review) => ({ ...review, authorNickname: getMemberNickname(review.teamMemberId) }))
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    })
+  getReviews(teamId: string, teamRestaurantId: string): Promise<ReviewWithAuthor[]> {
+    return api.get<ReviewWithAuthor[]>(reviewPath(teamId, teamRestaurantId))
   },
 
-  createReview(teamRestaurantId: string, request: ReviewRequest): Promise<Review> {
-    return simulateLatency(() => {
-      assertValid(request)
-      const teamRestaurant = findOrThrow(db.teamRestaurants.find(({ id }) => id === teamRestaurantId), '식당을 찾을 수 없습니다.')
-      const me = getMyMember(teamRestaurant.teamId)
-      if (db.reviews.some((r) => r.teamRestaurantId === teamRestaurantId && r.teamMemberId === me.id)) {
-        throw new ApiError('CONFLICT', '이미 리뷰를 작성했습니다.')
-      }
-      const now = new Date().toISOString()
-      const review: Review = { id: nextId('rv'), teamRestaurantId, teamMemberId: me.id, ...request, createdAt: now, updatedAt: now }
-      db.reviews.push(review)
-      return review
-    })
+  /** 한 팀원당 한 식당에 리뷰 한 개. 신규는 201, 기존 리뷰는 덮어쓰기(200). */
+  saveMyReview(teamId: string, teamRestaurantId: string, request: ReviewRequest): Promise<Review> {
+    return api.put<Review>(`${reviewPath(teamId, teamRestaurantId)}/me`, request)
   },
 
-  updateReview(reviewId: string, request: ReviewRequest): Promise<Review> {
-    return simulateLatency(() => {
-      assertValid(request)
-      const review = getOwnReview(reviewId)
-      Object.assign(review, request, { updatedAt: new Date().toISOString() })
-      return review
-    })
-  },
-
-  deleteReview(reviewId: string): Promise<void> {
-    return simulateLatency(() => {
-      getOwnReview(reviewId)
-      db.reviews = db.reviews.filter(({ id }) => id !== reviewId)
-    })
+  deleteMyReview(teamId: string, teamRestaurantId: string): Promise<void> {
+    return api.delete(`${reviewPath(teamId, teamRestaurantId)}/me`)
   },
 }

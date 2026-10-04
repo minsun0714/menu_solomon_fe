@@ -12,7 +12,7 @@ import { useRestaurantDetail } from '@/hooks/restaurant/useRestaurantDetail'
 export function RestaurantDetailPage() {
   const { teamId = '', teamRestaurantId = '' } = useParams()
   const {
-    restaurant, reviews, currentUserReview, currentMemberId, hasReview, averageRating,
+    restaurant, reviews, currentUserReview, hasReview, averageRating,
     isLoading, isError, isSaving, isDeleting, createOrUpdateReview, deleteReview,
   } = useRestaurantDetail(teamId, teamRestaurantId)
 
@@ -40,7 +40,6 @@ export function RestaurantDetailPage() {
       <ReviewSection
         reviews={reviews}
         currentUserReview={currentUserReview}
-        currentMemberId={currentMemberId}
         hasReview={hasReview}
         isSaving={isSaving}
         isDeleting={isDeleting}

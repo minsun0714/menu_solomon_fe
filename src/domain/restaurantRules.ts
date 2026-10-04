@@ -19,12 +19,8 @@ export const RESTAURANT_SORT_LABEL: Record<RestaurantSort, string> = {
 
 export type RestaurantCategoryCount = { category: string; count: number }
 
-export function getRestaurantCategoryCounts(restaurants: TeamRestaurantSummary[]): RestaurantCategoryCount[] {
-  const counts = restaurants.reduce<Record<string, number>>((result, { restaurant }) => {
-    result[restaurant.category] = (result[restaurant.category] ?? 0) + 1
-    return result
-  }, {})
-  return Object.entries(counts)
+export function getRestaurantCategoryCounts(categoryCounts: Record<string, number>): RestaurantCategoryCount[] {
+  return Object.entries(categoryCounts)
     .map(([category, count]) => ({ category, count }))
     .sort((a, b) => a.category.localeCompare(b.category, 'ko'))
 }
