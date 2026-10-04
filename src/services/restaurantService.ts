@@ -31,14 +31,17 @@ export const restaurantService = {
   getTeamRestaurants(teamId: string): Promise<TeamRestaurantSummary[]> {
     return simulateLatency(() => {
       getTeamOrThrow(teamId)
+      getMyMember(teamId)
       return db.teamRestaurants.filter((tr) => tr.teamId === teamId).map(toSummary)
     })
   },
 
   getRestaurantDetail(teamRestaurantId: string): Promise<TeamRestaurantSummary> {
-    return simulateLatency(() =>
-      toSummary(findOrThrow(db.teamRestaurants.find(({ id }) => id === teamRestaurantId), '식당을 찾을 수 없습니다.')),
-    )
+    return simulateLatency(() => {
+      const teamRestaurant = findOrThrow(db.teamRestaurants.find(({ id }) => id === teamRestaurantId), '식당을 찾을 수 없습니다.')
+      getMyMember(teamRestaurant.teamId)
+      return toSummary(teamRestaurant)
+    })
   },
 
   // 실제 연동 시 이 함수 내부만 백엔드의 카카오 장소 검색 API 호출로 교체합니다.

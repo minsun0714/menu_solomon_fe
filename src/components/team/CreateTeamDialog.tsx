@@ -24,7 +24,7 @@ export function CreateTeamDialog({ isCreating, triggerClassName, onCreate }: Cre
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 팀 만들기</DialogTitle>
-            <DialogDescription>팀을 만들고 초대 코드나 링크로 동료를 초대하세요.</DialogDescription>
+            <DialogDescription>팀을 만들고 초대 링크로 동료를 초대하세요.</DialogDescription>
           </DialogHeader>
           <TeamForm submitLabel="팀 만들기" isSubmitting={isCreating} onSubmit={handleSubmit} />
         </DialogContent>

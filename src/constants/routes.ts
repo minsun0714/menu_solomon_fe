@@ -1,7 +1,6 @@
 export const ROUTES = {
   LANDING: '/',
   INVITATION: (inviteCode: string = ':inviteCode') => `/invite/${inviteCode}`,
-  MY_TEAMS: '/teams',
   TEAM_DETAIL: (teamId: string = ':teamId') => `/teams/${teamId}`,
   VOTE_DETAIL: (teamId: string = ':teamId', sessionId: string = ':sessionId') =>
     `/teams/${teamId}/votes/${sessionId}`,

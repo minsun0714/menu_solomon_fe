@@ -14,7 +14,7 @@ import {
   simulateLatency,
 } from '@/mocks/api/db'
 import type { Restaurant } from '@/types/restaurant'
-import type { Team, TeamInvite, TeamMember, TeamMemberProfile, TeamPreview, TeamRequest, TeamSummary } from '@/types/team'
+import type { Team, TeamDetail, TeamInvite, TeamMember, TeamMemberProfile, TeamPreview, TeamRequest, TeamSort, TeamSummary } from '@/types/team'
 
 const toProfile = (member: TeamMember): TeamMemberProfile => ({ ...member, user: getUserOrThrow(member.userId) })
 
@@ -35,10 +35,10 @@ function getLatestLunch(teamId: string): TeamSummary['latestLunch'] {
 }
 
 export const teamService = {
-  getMyTeams(): Promise<TeamSummary[]> {
+  getMyTeams(sort: TeamSort = 'LATEST_LUNCH'): Promise<TeamSummary[]> {
     return simulateLatency(() => {
       const userId = requireUserId()
-      return db.members
+      const teams = db.members
         .filter((member) => member.userId === userId)
         .map((member) => {
           const team = getTeamOrThrow(member.teamId)
@@ -52,27 +52,41 @@ export const teamService = {
             latestLunch: getLatestLunch(team.id),
           }
         })
+      return teams.sort((a, b) => {
+        if (sort === 'NAME') return a.name.localeCompare(b.name, 'ko')
+        if (sort === 'ACTIVE_VOTES') return b.activeVoteCount - a.activeVoteCount || a.name.localeCompare(b.name, 'ko')
+        if (sort === 'MEMBER_COUNT') return b.memberCount - a.memberCount || a.name.localeCompare(b.name, 'ko')
+        const aTime = a.latestLunch ? new Date(a.latestLunch.confirmedAt).getTime() : 0
+        const bTime = b.latestLunch ? new Date(b.latestLunch.confirmedAt).getTime() : 0
+        return bTime - aTime || a.name.localeCompare(b.name, 'ko')
+      })
     })
   },
 
-  getTeam(teamId: string): Promise<Team> {
-    return simulateLatency(() => getTeamOrThrow(teamId))
+  getTeam(teamId: string): Promise<TeamDetail> {
+    return simulateLatency(() => {
+      const team = getTeamOrThrow(teamId)
+      const me = getMyMember(teamId)
+      return { ...team, myRole: me.role }
+    })
   },
 
   getTeamByInviteCode(inviteCode: string): Promise<TeamPreview> {
     return simulateLatency(() => {
       const team = findOrThrow(
         findTeamByInviteCode(inviteCode),
-        '유효하지 않은 초대 코드입니다.',
+        '유효하지 않은 초대 링크입니다.',
       )
       const members = db.members.filter(({ teamId }) => teamId === team.id).map(toProfile)
-      return { ...team, memberCount: members.length, members }
+      const isAlreadyMember = db.members.some((member) => member.teamId === team.id && member.userId === db.currentUserId)
+      return { ...team, memberCount: members.length, members, isAlreadyMember }
     })
   },
 
   getTeamMembers(teamId: string): Promise<TeamMemberProfile[]> {
     return simulateLatency(() => {
       getTeamOrThrow(teamId)
+      getMyMember(teamId)
       return db.members.filter((member) => member.teamId === teamId).map(toProfile)
     })
   },
@@ -98,7 +112,7 @@ export const teamService = {
   joinTeam(inviteCode: string): Promise<TeamMember> {
     return simulateLatency(() => {
       const userId = requireUserId()
-      const { id: teamId } = findOrThrow(findTeamByInviteCode(inviteCode), '유효하지 않거나 만료된 초대 코드입니다.')
+      const { id: teamId } = findOrThrow(findTeamByInviteCode(inviteCode), '유효하지 않거나 만료된 초대 링크입니다.')
       const existing = db.members.find((m) => m.teamId === teamId && m.userId === userId)
       if (existing) throw new ApiError('CONFLICT', '이미 참여 중인 팀입니다.')
       const member: TeamMember = { id: nextId('m'), teamId, userId, role: TEAM_ROLE.MEMBER, joinedAt: new Date().toISOString() }
@@ -136,6 +150,17 @@ export const teamService = {
       const target = findOrThrow(db.members.find((m) => m.id === memberId && m.teamId === teamId), '멤버를 찾을 수 없습니다.')
       me.role = TEAM_ROLE.MEMBER
       target.role = TEAM_ROLE.ADMIN
+    })
+  },
+
+  transferAdminAndLeave(teamId: string, memberId: string): Promise<void> {
+    return simulateLatency(() => {
+      const me = getMyMember(teamId)
+      if (!isTeamAdmin(me)) throw new ApiError('FORBIDDEN', '관리자만 권한을 위임할 수 있습니다.')
+      const target = findOrThrow(db.members.find((m) => m.id === memberId && m.teamId === teamId), '멤버를 찾을 수 없습니다.')
+      if (target.id === me.id) throw new ApiError('CONFLICT', '본인에게 관리자 권한을 위임할 수 없습니다.')
+      target.role = TEAM_ROLE.ADMIN
+      db.members = db.members.filter(({ id }) => id !== me.id)
     })
   },
 

@@ -31,7 +31,7 @@ export function useUpdateTeamMutation(teamId: string) {
 export function useLeaveTeamMutation(teamId: string) {
   return useAppMutation({
     mutationFn: () => teamService.leaveTeam(teamId),
-    invalidateKeys: () => [queryKeys.team.mine],
+    invalidateKeys: () => [queryKeys.team.all],
     successMessage: TOAST_MESSAGES.TEAM_LEFT,
   })
 }
@@ -41,6 +41,14 @@ export function useTransferAdminMutation(teamId: string) {
     mutationFn: (memberId: string) => teamService.transferAdmin(teamId, memberId),
     invalidateKeys: () => [queryKeys.team.members(teamId), queryKeys.team.all],
     successMessage: TOAST_MESSAGES.ADMIN_TRANSFERRED,
+  })
+}
+
+export function useTransferAdminAndLeaveMutation(teamId: string) {
+  return useAppMutation({
+    mutationFn: (memberId: string) => teamService.transferAdminAndLeave(teamId, memberId),
+    invalidateKeys: () => [queryKeys.team.all, queryKeys.team.members(teamId)],
+    successMessage: TOAST_MESSAGES.TEAM_LEFT,
   })
 }
 
