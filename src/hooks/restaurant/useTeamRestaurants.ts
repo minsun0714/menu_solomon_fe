@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { filterRestaurants, getRestaurantCategoryCounts, ALL_CATEGORIES, RESTAURANT_SORT, type RestaurantSort } from '@/domain/restaurantRules'
+import { getRestaurantCategoryCounts, ALL_CATEGORIES, RESTAURANT_SORT, type RestaurantSort } from '@/domain/restaurantRules'
 import { useAddTeamRestaurantMutation, useDeleteTeamRestaurantMutation } from './mutations/useRestaurantMutations'
 import { usePlaceSearchQuery } from './queries/usePlaceSearchQuery'
 import { useTeamRestaurantsQuery } from './queries/useTeamRestaurantsQuery'
@@ -8,15 +8,17 @@ export function useTeamRestaurants(teamId: string) {
   const [keyword, setKeyword] = useState('')
   const [category, setCategory] = useState<string>(ALL_CATEGORIES)
   const [sort, setSort] = useState<RestaurantSort>(RESTAURANT_SORT.RATING_DESC)
-  const { data, isLoading, isError } = useTeamRestaurantsQuery(teamId)
+  const { data, isLoading, isError } = useTeamRestaurantsQuery(teamId, keyword, category, sort)
   const restaurants = data?.restaurants ?? []
   const { mutate: add, isPending: isAdding } = useAddTeamRestaurantMutation(teamId)
   const { mutate: remove, isPending: isDeleting } = useDeleteTeamRestaurantMutation(teamId)
 
+  const categoryCounts = getRestaurantCategoryCounts(data?.categoryCounts ?? {})
+
   return {
-    restaurants: filterRestaurants(restaurants, keyword, category, sort),
+    restaurants,
     totalCount: data?.totalCount ?? 0,
-    categoryCounts: getRestaurantCategoryCounts(data?.categoryCounts ?? {}),
+    categoryCounts,
     registeredKakaoPlaceIds: restaurants.map(({ restaurant }) => restaurant.kakaoPlaceId),
     keyword,
     category,
@@ -29,7 +31,15 @@ export function useTeamRestaurants(teamId: string) {
     isAdding,
     isDeleting,
     addRestaurant: (kakaoPlaceId: string, onAdded?: () => void) => add(kakaoPlaceId, { onSuccess: onAdded }),
-    deleteRestaurant: (teamRestaurantId: string) => remove(teamRestaurantId),
+    deleteRestaurant: (teamRestaurantId: string) => {
+      const deletesLastRestaurantInCategory =
+        category !== ALL_CATEGORIES && categoryCounts.find((item) => item.category === category)?.count === 1
+      remove(teamRestaurantId, {
+        onSuccess: () => {
+          if (deletesLastRestaurantInCategory) setCategory(ALL_CATEGORIES)
+        },
+      })
+    },
   }
 }
 

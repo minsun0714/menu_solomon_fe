@@ -15,6 +15,6 @@ export function useLunchVotes(teamId: string) {
     isLoading,
     isError,
     isCreating,
-    createVote: (closesAt: string, onCreated?: () => void) => create({ closesAt }, { onSuccess: onCreated }),
+    createVote: (name: string | undefined, closesAt: string, onCreated?: () => void) => create({ name, closesAt }, { onSuccess: onCreated }),
   }
 }

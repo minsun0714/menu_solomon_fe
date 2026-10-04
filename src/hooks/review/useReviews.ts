@@ -3,8 +3,8 @@ import { useCreateReviewMutation, useDeleteReviewMutation, useUpdateReviewMutati
 import { useReviewsQuery } from './queries/useReviewsQuery'
 import type { ReviewRequest } from '@/types/review'
 
-export function useReviews(teamId: string, teamRestaurantId: string) {
-  const { data: reviews = [], isLoading, isError } = useReviewsQuery(teamId, teamRestaurantId)
+export function useReviews(teamId: string, teamRestaurantId: string, enabled = true) {
+  const { data: reviews = [], isLoading, isError } = useReviewsQuery(teamId, teamRestaurantId, enabled)
   const { mutate: create, isPending: isCreating } = useCreateReviewMutation(teamId, teamRestaurantId)
   const { mutate: update, isPending: isUpdating } = useUpdateReviewMutation(teamId, teamRestaurantId)
   const { mutate: remove, isPending: isDeleting } = useDeleteReviewMutation(teamId, teamRestaurantId)

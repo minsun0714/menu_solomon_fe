@@ -30,7 +30,7 @@ export function useDeleteVoteMutation(sessionId: string, teamId: string) {
 
 export function useRevoteMutation(sessionId: string, teamId: string) {
   return useAppMutation({
-    mutationFn: (candidateIds?: string[]) => voteService.restart(teamId, sessionId, candidateIds),
+    mutationFn: () => voteService.restart(teamId, sessionId),
     invalidateKeys: () => [
       queryKeys.vote.detail(sessionId),
       queryKeys.vote.results(sessionId),

@@ -78,7 +78,7 @@ export type VoteResultsSnapshot = {
   ballots: LunchBallot[]
 }
 
-export type CreateVoteRequest = { closesAt: string }
+export type CreateVoteRequest = { name?: string; closesAt: string }
 export type UpdateVoteRequest = { closesAt?: string; name?: string }
 
 export type RecommendationPage = {
