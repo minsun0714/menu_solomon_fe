@@ -45,7 +45,8 @@ export function useVoteSession(teamId: string, sessionId: string) {
     setMemberParticipation: (teamMemberId: string, participating: boolean) =>
       updateParticipation({ teamMemberId, participating }),
     remainingTime: formatRemaining(remainingMs),
-    canEdit: session ? canEditVote(session, isCreator) : false,
+    canEdit: session ? canEditVote(session, currentMember !== undefined) : false,
+    canDelete: currentMember !== undefined,
     canVote: session ? canCastVote(session, isParticipating, now) : false,
     canRevote: session ? canRevote(session, isCreator) : false,
     canConfirm: session ? canConfirmLunch(session, decision, isCreator) : false,

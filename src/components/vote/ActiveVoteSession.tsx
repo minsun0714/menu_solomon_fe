@@ -7,6 +7,7 @@ import { CandidateManagement } from './CandidateManagement'
 import { ParticipationSummary } from './ParticipationSummary'
 import { VoteDetailHeader } from './VoteDetailHeader'
 import { VoteManagementActions } from './VoteManagementActions'
+import { VoteDeleteMenu } from './VoteDeleteMenu'
 
 type ActiveVoteSessionProps = {
   teamId: string
@@ -24,7 +25,7 @@ export function ActiveVoteSession({ teamId, sessionId }: ActiveVoteSessionProps)
     setMemberParticipation,
     results,
     winnerCandidates,
-    canEdit,
+    canEdit, canDelete,
     canVote,
     canRevote,
     currentMember,
@@ -38,22 +39,25 @@ export function ActiveVoteSession({ teamId, sessionId }: ActiveVoteSessionProps)
   const isOpen = session.status === VOTE_STATUS.OPEN
 
   return (
-    <section className="space-y-5 rounded-xl border bg-card p-5 shadow-xs">
+    <section className="relative space-y-5 rounded-xl border bg-card p-5 shadow-xs">
+      {canDelete && <VoteDeleteMenu teamId={teamId} sessionId={session.id} className="absolute top-3 right-3" />}
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-3">
           <VoteDetailHeader session={session} creatorNickname={creatorNickname ?? ''} teamId={teamId} canEdit={canEdit} />
           <VoteManagementActions teamId={teamId} session={session} canEdit={canEdit} canRevote={canRevote} />
         </div>
-        <ParticipationSummary
-          participants={participatingMembers}
-          nonParticipants={nonParticipatingMembers}
-          currentMemberId={currentMember?.id}
-          isUpdating={isUpdatingParticipation}
-          canToggle={isOpen}
-          canManageParticipants={isOpen}
-          onSetParticipation={setMemberParticipation}
-          compact
-        />
+        <div className="pr-8">
+          <ParticipationSummary
+            participants={participatingMembers}
+            nonParticipants={nonParticipatingMembers}
+            currentMemberId={currentMember?.id}
+            isUpdating={isUpdatingParticipation}
+            canToggle={isOpen}
+            canManageParticipants={isOpen}
+            onSetParticipation={setMemberParticipation}
+            compact
+          />
+        </div>
       </div>
 
       <div className="space-y-4">

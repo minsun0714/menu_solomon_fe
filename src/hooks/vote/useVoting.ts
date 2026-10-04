@@ -3,33 +3,36 @@ import { useDeleteBallotMutation, useSubmitBallotMutation, useUpdateBallotMutati
 import { useVoteSessionData } from './useVoteSessionData'
 
 export function useVoting(teamId: string, sessionId: string) {
-  const { currentUserBallot } = useVoteSessionData(teamId, sessionId)
-  const [pendingCandidateId, setPendingCandidateId] = useState<string | null>(null)
+  const { currentUserBallots } = useVoteSessionData(teamId, sessionId)
+  const [pendingCandidateIds, setPendingCandidateIds] = useState<string[] | null>(null)
   const { mutate: submit, isPending: isSubmitting } = useSubmitBallotMutation(sessionId, teamId)
   const { mutate: update, isPending: isUpdating } = useUpdateBallotMutation(sessionId, teamId)
   const { mutate: cancel, isPending: isCanceling } = useDeleteBallotMutation(sessionId, teamId)
 
-  const selectedCandidateId = pendingCandidateId ?? currentUserBallot?.candidateId ?? null
-  const hasVoted = currentUserBallot !== undefined
-  const clearSelection = () => setPendingCandidateId(null)
+  const savedCandidateIds = currentUserBallots.map(({ candidateId }) => candidateId)
+  const selectedCandidateIds = pendingCandidateIds ?? savedCandidateIds
+  const hasVoted = currentUserBallots.length > 0
+  const clearSelection = () => setPendingCandidateIds(null)
+  const toggleCandidate = (candidateId: string) => setPendingCandidateIds((pending) => {
+    const current = pending ?? savedCandidateIds
+    return current.includes(candidateId) ? current.filter((id) => id !== candidateId) : [...current, candidateId]
+  })
 
   const vote = () => {
-    if (selectedCandidateId) submit(selectedCandidateId, { onSuccess: clearSelection })
+    if (selectedCandidateIds.length > 0) submit(selectedCandidateIds, { onSuccess: clearSelection })
   }
   const changeVote = () => {
-    if (selectedCandidateId && currentUserBallot) {
-      update({ ballotId: currentUserBallot.id, candidateId: selectedCandidateId }, { onSuccess: clearSelection })
-    }
+    if (selectedCandidateIds.length > 0) update(selectedCandidateIds, { onSuccess: clearSelection })
   }
   const cancelVote = () => {
-    if (currentUserBallot) cancel(currentUserBallot.id, { onSuccess: clearSelection })
+    if (hasVoted) cancel(undefined, { onSuccess: clearSelection })
   }
 
   return {
-    selectedCandidateId,
-    selectCandidate: setPendingCandidateId,
+    selectedCandidateIds,
+    toggleCandidate,
     hasVoted,
-    isSelectionChanged: selectedCandidateId !== (currentUserBallot?.candidateId ?? null),
+    isSelectionChanged: [...selectedCandidateIds].sort().join(',') !== [...savedCandidateIds].sort().join(','),
     isPending: isSubmitting || isUpdating || isCanceling,
     vote,
     changeVote,

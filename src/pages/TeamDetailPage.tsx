@@ -24,26 +24,26 @@ export function TeamDetailPage() {
   const [isManaging, setIsManaging] = useState(false)
   const { data: voteSessions = [] } = useVoteSessionsQuery(teamId)
   const { data: teamRestaurants } = useTeamRestaurantsQuery(teamId)
-  const { team, inviteCode, inviteLink, members, currentMember, isAdmin, isMember, canLeave, requiresAdminTransfer, isLoading, isError, isLeaving, isTransferring, leaveTeam, transferAdmin } =
+  const { team, inviteLink, members, currentMember, isAdmin, isMember, canLeave, requiresAdminTransfer, isLoading, isError, isLeaving, isTransferring, leaveTeam, transferAdmin, transferAdminAndLeave } =
     useTeamDetail(teamId)
 
-  const handleLeave = () => leaveTeam(() => navigate(ROUTES.MY_TEAMS))
+  const handleLeave = () => leaveTeam(() => navigate(ROUTES.LANDING))
+  const handleTransferAndLeave = (memberId: string) => transferAdminAndLeave(memberId, () => navigate(ROUTES.LANDING))
   const handleTabChange = (value: string) => setTab(value as TeamTab)
   const transferCandidates = members.filter(({ id }) => id !== currentMember?.id)
   const activeVotes = voteSessions.filter(({ status }) => status === VOTE_STATUS.OPEN)
-  const unvotedCount = activeVotes.filter(({ myBallotCandidateId }) => myBallotCandidateId === null).length
+  const unvotedCount = activeVotes.filter(({ myBallotCandidateIds }) => myBallotCandidateIds.length === 0).length
   const teamReviewCount = teamRestaurants?.reduce((sum, { reviewCount }) => sum + reviewCount, 0)
 
-  if (isLoading) return <div className="space-y-6"><BackLink to={ROUTES.MY_TEAMS}>모든 팀 보기</BackLink><Skeleton className="h-40" /></div>
-  if (isError || !team) return <div className="space-y-6"><BackLink to={ROUTES.MY_TEAMS}>모든 팀 보기</BackLink><ErrorState message="팀을 찾을 수 없습니다." /></div>
+  if (isLoading) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><Skeleton className="h-40" /></div>
+  if (isError || !team) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><ErrorState message="팀에 접근할 수 없습니다. 초대 링크로 참여해 주세요." /></div>
 
   return (
     <div className="space-y-6">
-      <BackLink to={ROUTES.MY_TEAMS}>모든 팀 보기</BackLink>
+      <BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink>
       <TeamHeader
         team={team}
         members={members}
-        inviteCode={inviteCode}
         inviteLink={inviteLink}
         restaurantCount={teamRestaurants?.length}
         reviewCount={teamReviewCount}
@@ -51,15 +51,17 @@ export function TeamDetailPage() {
         onToggleManagement={isAdmin ? () => setIsManaging((value) => !value) : undefined}
         canLeave={canLeave}
         requiresAdminTransfer={requiresAdminTransfer}
+        transferCandidates={transferCandidates}
+        deletesTeamOnLeave={isAdmin && members.length === 1}
         isLeaving={isLeaving}
         onLeave={isMember ? handleLeave : undefined}
+        onTransferAndLeave={isMember ? handleTransferAndLeave : undefined}
       />
       {isManaging && isAdmin ? (
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">팀 관리</h2>
           <TeamManagementTab
             team={team}
-            inviteCode={inviteCode}
             inviteLink={inviteLink}
             transferCandidates={transferCandidates}
             isTransferring={isTransferring}

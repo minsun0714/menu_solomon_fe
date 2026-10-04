@@ -58,7 +58,7 @@ export type VoteSessionSummary = LunchVoteSession & {
   participantCount: number
   candidateCount: number
   ballotCount: number
-  myBallotCandidateId: string | null
+  myBallotCandidateIds: string[]
 }
 
 export type VoteResult = {

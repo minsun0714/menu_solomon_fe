@@ -9,7 +9,6 @@ import { DATE_FORMATS } from '@/constants/date'
 import { DIALOG_MESSAGES } from '@/constants/messages'
 import { CONFIRMATION_TYPE_LABEL, VOTE_STATUS } from '@/constants/vote'
 import { useVoteDecision } from '@/hooks/vote/useVoteDecision'
-import { useVoteManagement } from '@/hooks/vote/useVoteManagement'
 import { formatDate } from '@/lib/date'
 import type { VoteStatus } from '@/types/vote'
 
@@ -17,17 +16,14 @@ type VoteDecisionPanelProps = {
   teamId: string
   sessionId: string
   status: VoteStatus
-  canRevote: boolean
 }
 
-export function VoteDecisionPanel({ teamId, sessionId, status, canRevote }: VoteDecisionPanelProps) {
+export function VoteDecisionPanel({ teamId, sessionId, status }: VoteDecisionPanelProps) {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState('')
   const {
     currentDecision, decidedRestaurant, confirmedByNickname, winnerCandidates, confirmableCandidates,
     isTied, canConfirm, canEditDecision, isPending, confirm, editDecision, deleteDecision,
   } = useVoteDecision(teamId, sessionId)
-  const { revoteAmongTied } = useVoteManagement(teamId, sessionId)
-
   const handleSubmit = () => (currentDecision ? editDecision(selectedRestaurantId) : confirm(selectedRestaurantId))
   const showEditor = canConfirm || canEditDecision
 
@@ -78,9 +74,6 @@ export function VoteDecisionPanel({ teamId, sessionId, status, canRevote }: Vote
                 message={DIALOG_MESSAGES.DELETE_DECISION}
                 onConfirm={deleteDecision}
               />
-            )}
-            {isTied && canRevote && (
-              <Button variant="outline" disabled={isPending} onClick={revoteAmongTied}>동점 후보로 재투표</Button>
             )}
           </div>
         )}

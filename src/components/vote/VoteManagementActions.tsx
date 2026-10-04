@@ -1,9 +1,7 @@
-import { Pencil, RotateCcw, Trash2 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Pencil, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { DIALOG_MESSAGES } from '@/constants/messages'
-import { ROUTES } from '@/constants/routes'
 import { useVoteManagement } from '@/hooks/vote/useVoteManagement'
 import { ClosingTimeDialog } from './ClosingTimeDialog'
 import type { LunchVoteSession } from '@/types/vote'
@@ -16,10 +14,7 @@ type VoteManagementActionsProps = {
 }
 
 export function VoteManagementActions({ teamId, session, canEdit, canRevote }: VoteManagementActionsProps) {
-  const navigate = useNavigate()
-  const { isPending, updateClosesAt, deleteVote, revote } = useVoteManagement(teamId, session.id)
-
-  const handleDelete = () => deleteVote(() => navigate(ROUTES.TEAM_DETAIL(teamId)))
+  const { isPending, updateClosesAt, revote } = useVoteManagement(teamId, session.id)
 
   if (!canEdit && !canRevote) return null
 
@@ -38,17 +33,10 @@ export function VoteManagementActions({ teamId, session, canEdit, canRevote }: V
       )}
       {canRevote && (
         <ConfirmDialog
-          trigger={<Button variant="outline" size="sm" disabled={isPending}><RotateCcw /> 재투표</Button>}
+          trigger={<Button variant="outline" size="sm" disabled={isPending}><RotateCcw /> 투표 다시 시작</Button>}
           message={DIALOG_MESSAGES.REVOTE}
           destructive={false}
           onConfirm={revote}
-        />
-      )}
-      {canEdit && (
-        <ConfirmDialog
-          trigger={<Button variant="outline" size="sm" disabled={isPending}><Trash2 /> 투표 삭제</Button>}
-          message={DIALOG_MESSAGES.DELETE_VOTE}
-          onConfirm={handleDelete}
         />
       )}
     </div>
