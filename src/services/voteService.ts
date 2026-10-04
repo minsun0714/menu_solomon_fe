@@ -29,8 +29,8 @@ export const voteService = {
     return api.get<VoteSessionDetail>(votePath(teamId, sessionId))
   },
 
-  createVote(teamId: string, { closesAt }: CreateVoteRequest): Promise<LunchVoteSession> {
-    return api.post<LunchVoteSession>(votePath(teamId), { closesAt })
+  createVote(teamId: string, { name, closesAt }: CreateVoteRequest): Promise<LunchVoteSession> {
+    return api.post<LunchVoteSession>(votePath(teamId), { name, closesAt })
   },
 
   updateVote(teamId: string, sessionId: string, { closesAt, name }: UpdateVoteRequest): Promise<LunchVoteSession> {
@@ -84,18 +84,9 @@ export const voteService = {
     return api.get<VoteResultsSnapshot>(`${votePath(teamId, sessionId)}/results`)
   },
 
-  /** 후보와 참여 상태는 유지하고 표를 초기화한다. `keepCandidateIds`가 있으면 재시작 후 나머지 후보는 삭제한다. */
-  async restart(teamId: string, sessionId: string, keepCandidateIds?: string[]): Promise<LunchVoteSession> {
-    const session = await api.post<LunchVoteSession>(`${votePath(teamId, sessionId)}/restart`)
-    if (keepCandidateIds && keepCandidateIds.length > 0) {
-      const candidates = await voteService.getCandidates(teamId, sessionId)
-      await Promise.all(
-        candidates
-          .filter(({ id }) => !keepCandidateIds.includes(id))
-          .map(({ id }) => voteService.deleteCandidate(teamId, sessionId, id)),
-      )
-    }
-    return session
+  /** 후보와 참여 상태는 유지하고 표를 초기화한다. */
+  restart(teamId: string, sessionId: string): Promise<LunchVoteSession> {
+    return api.post<LunchVoteSession>(`${votePath(teamId, sessionId)}/restart`)
   },
 
   confirmLunch(teamId: string, sessionId: string, restaurantId: string): Promise<LunchDecision> {
