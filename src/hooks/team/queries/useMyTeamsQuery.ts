@@ -5,5 +5,5 @@ import { teamService } from '@/services/teamService'
 
 export function useMyTeamsQuery() {
   const { user } = useAuth()
-  return useQuery({ queryKey: queryKeys.team.mine, queryFn: teamService.getMyTeams, enabled: user !== null })
+  return useQuery({ queryKey: queryKeys.team.mine, queryFn: () => teamService.getMyTeams(), enabled: Boolean(user) })
 }
