@@ -2,12 +2,14 @@ import { TOAST_MESSAGES } from '@/constants/messages'
 import { useAppMutation } from '@/hooks/shared/useAppMutation'
 import { queryKeys } from '@/queries/queryKeys'
 import { teamService } from '@/services/teamService'
+import { analytics } from '@/lib/analytics'
 import type { TeamRequest } from '@/types/team'
 
 export function useCreateTeamMutation() {
   return useAppMutation({
     mutationFn: (request: TeamRequest) => teamService.createTeam(request),
     invalidateKeys: () => [queryKeys.team.all],
+    trackSuccess: ({ id }) => analytics.track('team_created', { team_id: id }),
     successMessage: TOAST_MESSAGES.TEAM_CREATED,
   })
 }
@@ -16,6 +18,7 @@ export function useJoinTeamMutation(inviteCode: string) {
   return useAppMutation({
     mutationFn: () => teamService.joinTeam(inviteCode),
     invalidateKeys: (_, { teamId }) => [queryKeys.team.all, queryKeys.team.members(teamId)],
+    trackSuccess: ({ teamId }) => analytics.track('team_joined', { team_id: teamId }),
     successMessage: TOAST_MESSAGES.TEAM_JOINED,
   })
 }

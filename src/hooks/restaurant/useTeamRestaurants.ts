@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getRestaurantCategoryCounts, ALL_CATEGORIES, RESTAURANT_SORT, type RestaurantSort } from '@/domain/restaurantRules'
 import { useAddTeamRestaurantMutation, useDeleteTeamRestaurantMutation } from './mutations/useRestaurantMutations'
 import { usePlaceSearchQuery } from './queries/usePlaceSearchQuery'
 import { useTeamRestaurantsQuery } from './queries/useTeamRestaurantsQuery'
+import { analytics } from '@/lib/analytics'
 
 export function useTeamRestaurants(teamId: string) {
   const [keyword, setKeyword] = useState('')
@@ -12,6 +13,18 @@ export function useTeamRestaurants(teamId: string) {
   const restaurants = data?.restaurants ?? []
   const { mutate: add, isPending: isAdding } = useAddTeamRestaurantMutation(teamId)
   const { mutate: remove, isPending: isDeleting } = useDeleteTeamRestaurantMutation(teamId)
+  const trackedCategory = useRef('')
+
+  useEffect(() => {
+    if (!data || category === ALL_CATEGORIES || trackedCategory.current === category) return
+    trackedCategory.current = category
+    analytics.track('category_filtered', {
+      filter_type: 'cuisine',
+      filter_value: category,
+      result_count_after_filter: data.restaurants.length,
+      previous_step: 'restaurant_list',
+    })
+  }, [category, data])
 
   const categoryCounts = getRestaurantCategoryCounts(data?.categoryCounts ?? {})
 
@@ -48,6 +61,18 @@ export function useRestaurantCatalogSearch() {
   const [submittedKeyword, setSubmittedKeyword] = useState('')
   const [page, setPage] = useState(1)
   const { data, isFetching } = usePlaceSearchQuery(submittedKeyword, page)
+  const trackedKeyword = useRef('')
+
+  useEffect(() => {
+    if (!data || isFetching || page !== 1 || !submittedKeyword || trackedKeyword.current === submittedKeyword) return
+    trackedKeyword.current = submittedKeyword
+    analytics.track('menu_search_performed', {
+      search_query: submittedKeyword,
+      results_count: data.totalCount,
+      search_mode: 'restaurants',
+      is_autocomplete_used: false,
+    })
+  }, [data, isFetching, page, submittedKeyword])
 
   const search = () => {
     const nextKeyword = keyword.trim()
@@ -60,6 +85,7 @@ export function useRestaurantCatalogSearch() {
     setKeyword('')
     setSubmittedKeyword('')
     setPage(1)
+    trackedKeyword.current = ''
   }
 
   return {
