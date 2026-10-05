@@ -2,12 +2,14 @@ import { TOAST_MESSAGES } from '@/constants/messages'
 import { useAppMutation } from '@/hooks/shared/useAppMutation'
 import { queryKeys } from '@/queries/queryKeys'
 import { voteService } from '@/services/voteService'
+import { analytics } from '@/lib/analytics'
 import type { CreateVoteRequest, UpdateVoteRequest } from '@/types/vote'
 
 export function useCreateVoteMutation(teamId: string) {
   return useAppMutation({
     mutationFn: (request: CreateVoteRequest) => voteService.createVote(teamId, request),
     invalidateKeys: () => [queryKeys.vote.sessions(teamId), queryKeys.team.all],
+    trackSuccess: ({ id }) => analytics.track('vote_created', { team_id: teamId, vote_id: id }),
     successMessage: TOAST_MESSAGES.VOTE_CREATED,
   })
 }
@@ -38,6 +40,7 @@ export function useCloseVoteMutation(sessionId: string, teamId: string) {
       queryKeys.team.all,
       queryKeys.history.all,
     ],
+    trackSuccess: () => analytics.track('vote_closed', { team_id: teamId, vote_id: sessionId }),
     successMessage: TOAST_MESSAGES.VOTE_CLOSED,
   })
 }

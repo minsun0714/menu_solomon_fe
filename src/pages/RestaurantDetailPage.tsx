@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { MapPin } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
@@ -8,6 +9,7 @@ import { Rating } from '@/components/common/Rating'
 import { ReviewSection } from '@/components/review/ReviewSection'
 import { ROUTES, TEAM_TAB } from '@/constants/routes'
 import { useRestaurantDetail } from '@/hooks/restaurant/useRestaurantDetail'
+import { analytics } from '@/lib/analytics'
 
 export function RestaurantDetailPage() {
   const { teamId = '', teamRestaurantId = '' } = useParams()
@@ -15,6 +17,28 @@ export function RestaurantDetailPage() {
     restaurant, reviews, currentUserReview, hasReview, averageRating,
     isLoading, isError, isSaving, isDeleting, createOrUpdateReview, deleteReview,
   } = useRestaurantDetail(teamId, teamRestaurantId)
+  const trackedRestaurantId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!restaurant || trackedRestaurantId.current === restaurant.restaurantId) return
+    trackedRestaurantId.current = restaurant.restaurantId
+    const storageKey = `mixpanel:restaurant-viewed:${restaurant.restaurantId}`
+    let isFirstTimeViewer = true
+
+    try {
+      isFirstTimeViewer = localStorage.getItem(storageKey) === null
+      localStorage.setItem(storageKey, new Date().toISOString())
+    } catch {
+      // Analytics must not interfere with the restaurant page when storage is unavailable.
+    }
+
+    analytics.track('menu_page_viewed', {
+      restaurant_id: restaurant.restaurantId,
+      menu_id: null,
+      is_first_time_viewer: isFirstTimeViewer,
+      referrer_url: document.referrer || null,
+    })
+  }, [restaurant])
 
   const teamRestaurantPath = `${ROUTES.TEAM_DETAIL(teamId)}?tab=${TEAM_TAB.RESTAURANTS}`
 
