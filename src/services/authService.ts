@@ -5,4 +5,8 @@ export const authService = {
   getCurrentUser() {
     return api.get<User>('/session/me')
   },
+
+  updateNickname(nickname: string) {
+    return api.patch<User>('/session/me', { nickname })
+  },
 }
