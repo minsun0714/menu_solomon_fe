@@ -28,6 +28,20 @@ export function useDeleteVoteMutation(sessionId: string, teamId: string) {
   })
 }
 
+export function useCloseVoteMutation(sessionId: string, teamId: string) {
+  return useAppMutation({
+    mutationFn: () => voteService.closeVote(teamId, sessionId),
+    invalidateKeys: () => [
+      queryKeys.vote.detail(sessionId),
+      queryKeys.vote.results(sessionId),
+      queryKeys.vote.sessions(teamId),
+      queryKeys.team.all,
+      queryKeys.history.all,
+    ],
+    successMessage: TOAST_MESSAGES.VOTE_CLOSED,
+  })
+}
+
 export function useRevoteMutation(sessionId: string, teamId: string) {
   return useAppMutation({
     mutationFn: () => voteService.restart(teamId, sessionId),

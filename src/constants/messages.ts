@@ -17,6 +17,7 @@ export const TOAST_MESSAGES = {
   VOTE_CREATED: '투표가 생성되었습니다.',
   VOTE_UPDATED: '투표 정보가 수정되었습니다.',
   VOTE_DELETED: '투표가 삭제되었습니다.',
+  VOTE_CLOSED: '투표를 마감했습니다.',
   VOTE_SUBMITTED: '투표했습니다.',
   VOTE_CHANGED: '투표를 변경했습니다.',
   VOTE_CANCELED: '투표를 취소했습니다.',
@@ -50,6 +51,11 @@ export const DIALOG_MESSAGES = {
     title: '투표를 삭제할까요?',
     description: '모든 후보와 투표 내역이 함께 삭제됩니다.',
     action: '투표 삭제',
+  },
+  CLOSE_VOTE: {
+    title: '투표를 지금 마감할까요?',
+    description: '마감 후에는 참여 상태, 후보, 투표 내역을 변경할 수 없습니다.',
+    action: '지금 마감',
   },
   DELETE_CANDIDATE: {
     title: '후보 식당을 삭제할까요?',
