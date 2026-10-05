@@ -18,7 +18,8 @@ export function HistoryTab({ teamId }: { teamId: string }) {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null)
   const { period, setPeriod, entries, referenceDate, isLoading, isError } = useLunchHistory(teamId)
   const { pastSessions, isLoading: isVotesLoading, isError: isVotesError } = useLunchVotes(teamId)
-  const unresolvedSessions = pastSessions.filter(({ status }) => status === VOTE_STATUS.CLOSED)
+  const unresolvedSessions = pastSessions.filter(({ status, candidateCount }) =>
+    status === VOTE_STATUS.CLOSED && candidateCount > 0)
   const handlePeriodChange = (value: string) => setPeriod(value as HistoryPeriod)
 
   return (

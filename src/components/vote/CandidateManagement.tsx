@@ -15,10 +15,13 @@ type CandidateManagementProps = {
   sessionId: string
   candidates: CandidateDetail[]
   canAdd: boolean
+  initiallyOpen?: boolean
+  onPickerClose?: () => void
 }
 
-export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: CandidateManagementProps) {
-  const [open, setOpen] = useState(false)
+export function CandidateManagement({ teamId, sessionId, candidates, canAdd, initiallyOpen = false, onPickerClose }: CandidateManagementProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = initiallyOpen || internalOpen
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [sourceTab, setSourceTab] = useState<CandidateSourceTab>('TEAM')
   const {
@@ -29,10 +32,11 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
   const candidateKakaoPlaceIds = candidates.map(({ restaurant }) => restaurant.kakaoPlaceId)
   const isRegisteredCandidate = (kakaoPlaceId: string) => candidateKakaoPlaceIds.includes(kakaoPlaceId)
   const handleOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen)
+    setInternalOpen(nextOpen)
     if (!nextOpen) {
       setKeyword('')
       setSourceTab('TEAM')
+      onPickerClose?.()
     }
   }
   const handleSourceTabChange = (value: string) => {
@@ -48,7 +52,7 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd }: C
         <Button variant="outline" className="w-full" onClick={() => setShowRecommendations((value) => !value)}>
           <Sparkles /> 오늘의 추천 점심
         </Button>
-        <Button variant="outline" className="w-full" onClick={() => setOpen(true)}><Plus /> 후보 추가</Button>
+        <Button variant="outline" className="w-full" onClick={() => setInternalOpen(true)}><Plus /> 후보 추가</Button>
       </div>
       {showRecommendations && (
         <Card>

@@ -28,9 +28,9 @@ export function useVoteDecision(teamId: string, sessionId: string) {
     canConfirm: session ? canConfirmLunch(session, decision, isCreator) : false,
     canEditDecision: canEditDecision(decision, isCreator),
     isPending: isConfirming || isUpdating || isDeleting,
-    confirm: (restaurantId: string) => confirm(restaurantId),
-    editDecision: (restaurantId: string) => {
-      if (decision) update(restaurantId)
+    confirm: (restaurantId: string, onDone?: () => void) => confirm(restaurantId, { onSuccess: onDone }),
+    editDecision: (restaurantId: string, onDone?: () => void) => {
+      if (decision) update(restaurantId, { onSuccess: onDone })
     },
     deleteDecision: () => {
       if (decision) remove(undefined)
