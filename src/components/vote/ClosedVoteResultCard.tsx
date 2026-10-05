@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Check, CheckCircle2, Clock, Pencil, RotateCcw, Trophy, Utensils, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
@@ -13,7 +14,6 @@ import { useTeamPermissions } from '@/hooks/team/useTeamPermissions'
 import { useVoteManagement } from '@/hooks/vote/useVoteManagement'
 import { useCandidatesQuery, useVoteParticipantsQuery, useVoteResultsQuery, useVoteSessionQuery } from '@/hooks/vote/queries/useVoteQueries'
 import { formatDate } from '@/lib/date'
-import { ParticipationSummary } from './ParticipationSummary'
 import { VoteDeleteMenu } from './VoteDeleteMenu'
 import type { VoteSessionSummary } from '@/types/vote'
 
@@ -50,7 +50,6 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
     .sort((a, b) => b.result.voteCount - a.result.voteCount)
   const topVoteCount = resultRows[0]?.result.voteCount ?? 0
   const participatingMembers = participants.filter(({ participating }) => participating)
-  const nonParticipatingMembers = participants.filter(({ participating }) => !participating)
   const isLoading = isDetailLoading || isCandidatesLoading || isResultsLoading
   const isError = isDetailError || isCandidatesError || isResultsError
   const canManageDecision = session.createdByTeamMemberId === currentMember?.id
@@ -123,13 +122,14 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
         ) : isParticipantsError ? (
           <p className="text-sm text-destructive">참여자 목록을 불러오지 못했습니다.</p>
         ) : (
-          <ParticipationSummary
-            participants={participatingMembers}
-            nonParticipants={nonParticipatingMembers}
-            isUpdating={false}
-            canToggle={false}
-            compact
-          />
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-xs font-medium text-muted-foreground">참여 {participatingMembers.length}명</span>
+            {participatingMembers.length === 0 ? (
+              <span className="text-xs text-muted-foreground">참여자가 없어요.</span>
+            ) : participatingMembers.map(({ id: participantId, nickname }) => (
+              <Badge key={participantId} variant="success">{nickname}</Badge>
+            ))}
+          </div>
         )}
 
         {!hasCandidates && !isLoading ? (
