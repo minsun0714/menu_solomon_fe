@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ROUTES } from '@/constants/routes'
 import { LandingPage } from '@/pages/LandingPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 import { RestaurantDetailPage } from '@/pages/RestaurantDetailPage'
 import { TeamDetailPage } from '@/pages/TeamDetailPage'
 import { TeamInvitationPage } from '@/pages/TeamInvitationPage'
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.TEAM_DETAIL(), element: <TeamDetailPage /> },
       { path: ROUTES.VOTE_DETAIL(), element: <VoteDetailPage /> },
       { path: ROUTES.RESTAURANT_DETAIL(), element: <RestaurantDetailPage /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])
