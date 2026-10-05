@@ -12,9 +12,11 @@ import { VoteDeleteMenu } from './VoteDeleteMenu'
 type ActiveVoteSessionProps = {
   teamId: string
   sessionId: string
+  openCandidatePicker?: boolean
+  onCandidatePickerClose?: () => void
 }
 
-export function ActiveVoteSession({ teamId, sessionId }: ActiveVoteSessionProps) {
+export function ActiveVoteSession({ teamId, sessionId, openCandidatePicker = false, onCandidatePickerClose }: ActiveVoteSessionProps) {
   const {
     session,
     creatorNickname,
@@ -66,6 +68,8 @@ export function ActiveVoteSession({ teamId, sessionId }: ActiveVoteSessionProps)
           sessionId={sessionId}
           candidates={candidates}
           canAdd={isOpen}
+          initiallyOpen={openCandidatePicker}
+          onPickerClose={onCandidatePickerClose}
         />
         <CandidateList
           teamId={teamId}

@@ -14,6 +14,6 @@ export function useVoteManagement(teamId: string, sessionId: string) {
     updateClosesAt: (closesAt: string, onDone?: () => void) => update({ closesAt }, { onSuccess: onDone }),
     updateName: (name: string, onDone?: () => void) => update({ name }, { onSuccess: onDone }),
     deleteVote: (onDeleted?: () => void) => remove(undefined, { onSuccess: onDeleted }),
-    revote: () => revote(undefined),
+    revote: (onRestarted?: () => void) => revote(undefined, { onSuccess: onRestarted }),
   }
 }

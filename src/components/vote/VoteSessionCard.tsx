@@ -38,7 +38,11 @@ export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
           {hasVoted && <span className="flex items-center gap-1 text-primary"><CheckCircle2 className="size-4" />투표 완료</span>}
         </div>
         <Button size="sm" variant={hasVoted ? 'outline' : 'default'} onClick={() => onOpen(id)}>
-          {status === VOTE_STATUS.OPEN ? '투표하러 가기' : '투표 결과 보기'}
+          {status === VOTE_STATUS.OPEN
+            ? '투표하러 가기'
+            : status === VOTE_STATUS.CLOSED
+              ? '결과 확인 및 확정'
+              : '최종 결과 보기'}
         </Button>
       </CardContent>
     </Card>

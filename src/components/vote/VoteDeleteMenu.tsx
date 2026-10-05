@@ -22,13 +22,14 @@ type VoteDeleteMenuProps = {
   teamId: string
   sessionId: string
   className?: string
+  navigateAfterDelete?: boolean
 }
 
-export function VoteDeleteMenu({ teamId, sessionId, className }: VoteDeleteMenuProps) {
+export function VoteDeleteMenu({ teamId, sessionId, className, navigateAfterDelete = true }: VoteDeleteMenuProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const navigate = useNavigate()
   const { isPending, deleteVote } = useVoteManagement(teamId, sessionId)
-  const handleDelete = () => deleteVote(() => navigate(ROUTES.TEAM_DETAIL(teamId)))
+  const handleDelete = () => deleteVote(navigateAfterDelete ? () => navigate(ROUTES.TEAM_DETAIL(teamId)) : undefined)
 
   return (
     <div className={cn('z-10', className)}>

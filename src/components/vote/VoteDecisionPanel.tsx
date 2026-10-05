@@ -16,15 +16,18 @@ type VoteDecisionPanelProps = {
   teamId: string
   sessionId: string
   status: VoteStatus
+  onDecisionSaved?: () => void
 }
 
-export function VoteDecisionPanel({ teamId, sessionId, status }: VoteDecisionPanelProps) {
+export function VoteDecisionPanel({ teamId, sessionId, status, onDecisionSaved }: VoteDecisionPanelProps) {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState('')
   const {
     currentDecision, decidedRestaurant, confirmedByNickname, winnerCandidates, confirmableCandidates,
     isTied, canConfirm, canEditDecision, isPending, confirm, editDecision, deleteDecision,
   } = useVoteDecision(teamId, sessionId)
-  const handleSubmit = () => (currentDecision ? editDecision(selectedRestaurantId) : confirm(selectedRestaurantId))
+  const handleSubmit = () => (currentDecision
+    ? editDecision(selectedRestaurantId, onDecisionSaved)
+    : confirm(selectedRestaurantId, onDecisionSaved))
   const showEditor = canConfirm || canEditDecision
 
   return (
