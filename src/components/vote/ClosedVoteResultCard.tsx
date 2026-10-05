@@ -1,16 +1,19 @@
-import { CheckCircle2, Clock, RotateCcw, Trophy, Users, Utensils } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { Check, CheckCircle2, Clock, Pencil, RotateCcw, Trophy, Utensils, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { DATE_FORMATS } from '@/constants/date'
 import { DIALOG_MESSAGES } from '@/constants/messages'
-import { VOTE_STATUS } from '@/constants/vote'
+import { MAX_VOTE_NAME_LENGTH, VOTE_STATUS } from '@/constants/vote'
 import { useTeamPermissions } from '@/hooks/team/useTeamPermissions'
 import { useVoteManagement } from '@/hooks/vote/useVoteManagement'
-import { useCandidatesQuery, useVoteResultsQuery, useVoteSessionQuery } from '@/hooks/vote/queries/useVoteQueries'
+import { useCandidatesQuery, useVoteParticipantsQuery, useVoteResultsQuery, useVoteSessionQuery } from '@/hooks/vote/queries/useVoteQueries'
 import { formatDate } from '@/lib/date'
+import { ParticipationSummary } from './ParticipationSummary'
 import { VoteDeleteMenu } from './VoteDeleteMenu'
 import type { VoteSessionSummary } from '@/types/vote'
 
@@ -22,12 +25,16 @@ type ClosedVoteResultCardProps = {
 }
 
 export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRestartForCandidate }: ClosedVoteResultCardProps) {
-  const { id, name, status, creatorNickname, closesAt, participantCount } = session
+  const { id, name, status, creatorNickname, closesAt } = session
+  const displayName = name ?? `점심 투표 #${id}`
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [nextName, setNextName] = useState('')
   const { data: detail, isLoading: isDetailLoading, isError: isDetailError } = useVoteSessionQuery(teamId, id)
   const { data: candidates = [], isLoading: isCandidatesLoading, isError: isCandidatesError } = useCandidatesQuery(teamId, id)
   const { data: snapshot, isLoading: isResultsLoading, isError: isResultsError } = useVoteResultsQuery(teamId, id)
+  const { data: participants = [], isLoading: isParticipantsLoading, isError: isParticipantsError } = useVoteParticipantsQuery(teamId, id)
   const { currentMember } = useTeamPermissions(teamId)
-  const { isPending: isManaging, revote } = useVoteManagement(teamId, id)
+  const { isPending: isManaging, revote, updateName } = useVoteManagement(teamId, id)
   const decision = detail?.decision
   const decidedCandidate = candidates.find(({ restaurantId }) => restaurantId === decision?.restaurantId)
   const results = snapshot?.results ?? []
@@ -42,17 +49,56 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
     }))
     .sort((a, b) => b.result.voteCount - a.result.voteCount)
   const topVoteCount = resultRows[0]?.result.voteCount ?? 0
+  const participatingMembers = participants.filter(({ participating }) => participating)
+  const nonParticipatingMembers = participants.filter(({ participating }) => !participating)
   const isLoading = isDetailLoading || isCandidatesLoading || isResultsLoading
   const isError = isDetailError || isCandidatesError || isResultsError
   const canManageDecision = session.createdByTeamMemberId === currentMember?.id
   const hasCandidates = (isLoading ? session.candidateCount : candidates.length) > 0
+  const handleStartNameEdit = () => {
+    setNextName(displayName)
+    setIsEditingName(true)
+  }
+  const handleNameSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    const trimmedName = nextName.trim()
+    if (!trimmedName) return
+    if (trimmedName === displayName) {
+      setIsEditingName(false)
+      return
+    }
+    updateName(trimmedName, () => setIsEditingName(false))
+  }
 
   return (
     <Card className={status === VOTE_STATUS.CLOSED ? 'border-amber-300/70' : undefined}>
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div className="space-y-1">
           <CardTitle className="flex flex-wrap items-center gap-2">
-            {name ?? `점심 투표 #${id}`}
+            {isEditingName ? (
+              <form className="flex items-center gap-1" onSubmit={handleNameSubmit}>
+                <Input
+                  value={nextName}
+                  maxLength={MAX_VOTE_NAME_LENGTH}
+                  className="h-8 w-56 font-semibold"
+                  autoFocus
+                  onChange={(event) => setNextName(event.target.value)}
+                />
+                <Button type="submit" variant="ghost" size="icon" className="size-8" disabled={!nextName.trim() || isManaging} aria-label="투표 이름 저장">
+                  <Check />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" className="size-8" disabled={isManaging} aria-label="투표 이름 수정 취소" onClick={() => setIsEditingName(false)}>
+                  <X />
+                </Button>
+              </form>
+            ) : (
+              <span className="flex items-center gap-1">
+                {displayName}
+                <Button variant="ghost" size="icon" className="size-8" aria-label="투표 이름 수정" onClick={handleStartNameEdit}>
+                  <Pencil />
+                </Button>
+              </span>
+            )}
             <StatusBadge status={status} />
           </CardTitle>
           <p className="text-sm text-muted-foreground">{creatorNickname}님이 만든 투표</p>
@@ -69,9 +115,22 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1"><Clock className="size-4" />{formatDate(closesAt, DATE_FORMATS.DATE_TIME)} 마감</span>
-          <span className="flex items-center gap-1"><Users className="size-4" />참여 {participantCount}</span>
           <span className="flex items-center gap-1"><Utensils className="size-4" />후보 {candidates.length || session.candidateCount}</span>
         </div>
+
+        {isParticipantsLoading ? (
+          <p className="text-sm text-muted-foreground">참여자 목록을 불러오고 있어요...</p>
+        ) : isParticipantsError ? (
+          <p className="text-sm text-destructive">참여자 목록을 불러오지 못했습니다.</p>
+        ) : (
+          <ParticipationSummary
+            participants={participatingMembers}
+            nonParticipants={nonParticipatingMembers}
+            isUpdating={false}
+            canToggle={false}
+            compact
+          />
+        )}
 
         {!hasCandidates && !isLoading ? (
           <div className="space-y-3 rounded-lg border border-dashed p-4">
