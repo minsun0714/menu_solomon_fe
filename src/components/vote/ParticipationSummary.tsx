@@ -1,6 +1,5 @@
 import { MousePointerClick, UserCheck, UserX } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/cn'
 import type { ParticipantDetail } from '@/types/vote'
@@ -83,8 +82,7 @@ export function ParticipationSummary({
   compact = false,
 }: ParticipationSummaryProps) {
   return (
-    <Card className={cn(compact && 'gap-3 py-3 shadow-none')}>
-      <CardContent className={cn('grid gap-4 sm:grid-cols-2', compact && 'gap-2 px-3')}>
+    <section className={cn('grid gap-4 border-y py-4 sm:grid-cols-2', compact && 'gap-2 py-2')}>
         {canToggle && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground sm:col-span-2">
             <MousePointerClick className="size-3.5" /> 팀원 뱃지를 눌러 참여 여부를 변경할 수 있어요.
@@ -98,7 +96,6 @@ export function ParticipationSummary({
           <p className={cn('text-sm font-medium text-muted-foreground', compact && 'text-xs')}>불참 {nonParticipants.length}명</p>
           <NameBadges members={nonParticipants} emptyText="모두 참여 중이에요" canManage={canManageParticipants} canToggle={canToggle} currentMemberId={currentMemberId} isUpdating={isUpdating} nextParticipating onSetParticipation={onSetParticipation} />
         </div>
-      </CardContent>
-    </Card>
+    </section>
   )
 }

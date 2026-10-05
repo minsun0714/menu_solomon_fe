@@ -28,7 +28,7 @@ export function VoteCandidateCard({ candidate, result, isSelected, isWinner, isS
   return (
     <div
       className={cn(
-        'relative w-full rounded-xl border bg-card shadow-xs transition-all',
+        'relative w-full rounded-md border bg-card transition-colors',
         isSelectable && 'hover:border-primary/50',
         isSelected && 'border-primary ring-1 ring-primary',
       )}

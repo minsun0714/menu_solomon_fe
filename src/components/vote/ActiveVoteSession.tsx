@@ -41,7 +41,7 @@ export function ActiveVoteSession({ teamId, sessionId, openCandidatePicker = fal
   const isOpen = session.status === VOTE_STATUS.OPEN
 
   return (
-    <section className="relative space-y-5 rounded-xl border bg-card p-5 shadow-xs">
+    <section className="relative space-y-5 border-y bg-card py-5">
       {canDelete && <VoteDeleteMenu teamId={teamId} sessionId={session.id} className="absolute top-3 right-3" />}
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-3">

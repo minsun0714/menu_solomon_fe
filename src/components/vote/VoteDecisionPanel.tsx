@@ -31,7 +31,7 @@ export function VoteDecisionPanel({ teamId, sessionId, status, onDecisionSaved }
   const showEditor = canConfirm || canEditDecision
 
   return (
-    <Card className="border-primary/30 bg-accent/30">
+    <Card className="rounded-md border-l-2 border-l-primary">
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2"><Trophy className="size-4 text-primary" />점심 결정</CardTitle>
         {currentDecision && <Badge variant="success">{CONFIRMATION_TYPE_LABEL[currentDecision.confirmationType]}</Badge>}

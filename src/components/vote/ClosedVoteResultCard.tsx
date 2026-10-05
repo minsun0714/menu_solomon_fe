@@ -70,7 +70,7 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
   }
 
   return (
-    <Card className={status === VOTE_STATUS.CLOSED ? 'border-amber-300/70' : undefined}>
+    <Card className={status === VOTE_STATUS.CLOSED ? 'rounded-md border-amber-300/70' : 'rounded-md'}>
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div className="space-y-1">
           <CardTitle className="flex flex-wrap items-center gap-2">

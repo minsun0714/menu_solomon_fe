@@ -46,10 +46,10 @@ export function TeamHeader({
   const { name, description } = team
 
   return (
-    <section className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-xs md:flex-row md:items-start md:justify-between">
+    <section className="flex flex-col gap-4 border-b pb-6 md:flex-row md:items-start md:justify-between">
       <div className="space-y-3">
         <div>
-          <h1 className="text-2xl font-bold">{name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">

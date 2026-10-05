@@ -66,7 +66,7 @@ export function OfficeLocationDialog({ value, onSave }: OfficeLocationDialogProp
 
   return (
     <>
-      <Button size="sm" variant="secondary" className="shadow-sm" onClick={() => setOpen(true)}>
+      <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>
         <Building2 /> {value ? '사무실 위치 변경' : '사무실 주소 설정'}
       </Button>
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -91,8 +91,8 @@ export function OfficeLocationDialog({ value, onSave }: OfficeLocationDialogProp
           </form>
 
           {!searchedKeyword ? (
-            <div className="rounded-xl border border-dashed px-4 py-10 text-center">
-              <Building2 className="mx-auto mb-3 size-8 text-muted-foreground/60" />
+            <div className="border-y px-4 py-6 text-center">
+              <Building2 className="mx-auto mb-2 size-4 text-muted-foreground" />
               <p className="text-sm font-medium">사무실 위치를 검색해 보세요</p>
               <p className="mt-1 text-xs text-muted-foreground">회사명이나 정확한 주소를 입력하면 쉽게 찾을 수 있어요.</p>
             </div>
@@ -111,7 +111,7 @@ export function OfficeLocationDialog({ value, onSave }: OfficeLocationDialogProp
                     <button
                       key={place.kakaoPlaceId}
                       type="button"
-                      className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-colors ${isSelected ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted/50'}`}
+                      className={`flex w-full items-center gap-3 rounded-md border p-3 text-left transition-colors ${isSelected ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted/50'}`}
                       onClick={() => setSelected(place)}
                     >
                       <MapPin className={`size-5 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />

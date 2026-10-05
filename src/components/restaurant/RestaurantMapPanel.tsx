@@ -14,18 +14,18 @@ const DEFAULT_CENTER = { latitude: 37.5012, longitude: 127.0396 }
 
 function createRestaurantMarker(name: string, address: string) {
   const marker = document.createElement('div')
-  marker.className = 'flex cursor-default flex-col items-center drop-shadow-md'
+  marker.className = 'flex cursor-default flex-col items-center'
   marker.title = address
 
   const label = document.createElement('div')
-  label.className = 'max-w-44 truncate rounded-full border-2 border-primary bg-card px-3 py-1.5 text-xs font-semibold text-foreground whitespace-nowrap'
+  label.className = 'max-w-44 truncate rounded-md border border-primary bg-card px-2.5 py-1 text-xs font-medium text-foreground whitespace-nowrap'
   label.textContent = name
 
   const pointer = document.createElement('div')
   pointer.className = '-mt-px size-3 rotate-45 border-r-2 border-b-2 border-primary bg-card'
 
   const dot = document.createElement('div')
-  dot.className = 'mt-1 size-2.5 rounded-full border-2 border-card bg-primary shadow-sm'
+  dot.className = 'mt-1 size-2.5 rounded-full border-2 border-card bg-primary'
 
   marker.append(label, pointer, dot)
   return marker
@@ -33,7 +33,7 @@ function createRestaurantMarker(name: string, address: string) {
 
 function createOfficeMarker(name: string, address: string) {
   const marker = document.createElement('div')
-  marker.className = 'flex cursor-default flex-col items-center drop-shadow-md'
+  marker.className = 'flex cursor-default flex-col items-center'
   marker.title = address
 
   const label = document.createElement('div')
@@ -117,10 +117,10 @@ export function RestaurantMapPanel({ restaurants, officeLocation, onOfficeLocati
   }, [officeLocation, restaurants])
 
   return (
-    <aside className="sticky top-8 hidden h-[calc(100vh-4rem)] min-h-[560px] max-h-[720px] overflow-hidden rounded-xl border bg-muted shadow-xs lg:block">
+    <aside className="sticky top-8 hidden h-[calc(100vh-4rem)] min-h-[560px] max-h-[720px] overflow-hidden rounded-lg border bg-muted lg:block">
       <div ref={containerRef} className="absolute inset-0" aria-label="등록된 식당 위치 지도" />
 
-      <div className="pointer-events-none absolute top-4 left-4 z-10 rounded-lg border bg-card/95 p-3 shadow-sm backdrop-blur">
+      <div className="pointer-events-none absolute top-4 left-4 z-10 rounded-md border bg-card p-3">
         <p className="font-semibold">식당 지도</p>
         <p className="mt-0.5 text-xs text-muted-foreground">등록된 식당 {restaurants.length}곳</p>
       </div>
@@ -140,7 +140,7 @@ export function RestaurantMapPanel({ restaurants, officeLocation, onOfficeLocati
         </div>
       )}
       {status === 'ready' && restaurants.length === 0 && (
-        <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-lg border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-sm">
+        <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-md border bg-card px-3 py-2 text-xs text-muted-foreground">
           식당을 추가하면 지도에 표시돼요.
         </div>
       )}

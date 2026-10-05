@@ -26,9 +26,9 @@ export function RestaurantDetailPage() {
   return (
     <div className="space-y-6">
       <BackLink to={teamRestaurantPath}>팀으로 가기</BackLink>
-      <section className="space-y-2 rounded-xl border bg-card p-6">
+      <section className="space-y-2 border-b pb-5">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">{name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{name}</h1>
           <Badge variant="secondary">{category}</Badge>
         </div>
         <p className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="size-4" />{address}</p>

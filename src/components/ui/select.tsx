@@ -9,7 +9,7 @@ const SelectValue = SelectPrimitive.Value
 function SelectTrigger({ className, children, ...props }: React.ComponentProps<typeof SelectPrimitive.Trigger>) {
   return (
     <SelectPrimitive.Trigger
-      className={cn('flex h-9 w-fit cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-card px-3 text-sm whitespace-nowrap shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50', className)}
+      className={cn('flex h-9 w-fit cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-card px-3 text-sm whitespace-nowrap outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50', className)}
       {...props}
     >
       {children}

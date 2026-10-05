@@ -35,14 +35,14 @@ export function ReviewSection({ reviews, currentUserReview, hasReview, isSaving,
         {!isFormOpen && <Button size="sm" onClick={handleOpenForm}>{hasReview ? '내 리뷰 수정' : '리뷰 작성'}</Button>}
       </div>
       {isFormOpen && (
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-md border bg-card p-4">
           <ReviewForm initialReview={currentUserReview} isSubmitting={isSaving} onSubmit={handleSave} onCancel={closeForm} />
         </div>
       )}
       {reviews.length === 0 ? (
-        <EmptyState icon={MessageSquare} title="아직 리뷰가 없어요" description="첫 리뷰를 남겨 보세요." />
+        <EmptyState icon={MessageSquare} title="등록된 리뷰가 없습니다." />
       ) : (
-        <ul className="grid gap-3">
+        <ul className="divide-y border-y">
           {reviews.map((review) => (
             <ReviewItem key={review.id} review={review} isOwn={review.isMine} isDeleting={isDeleting} onEdit={handleOpenForm} onDelete={onDelete} />
           ))}

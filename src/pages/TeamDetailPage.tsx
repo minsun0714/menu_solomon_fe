@@ -38,7 +38,7 @@ export function TeamDetailPage() {
   if (isError || !team) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><ErrorState message="팀에 접근할 수 없습니다. 초대 링크로 참여해 주세요." /></div>
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink>
       <TeamHeader
         team={team}
@@ -54,7 +54,7 @@ export function TeamDetailPage() {
       />
       {isManaging && isAdmin ? (
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold">팀 관리</h2>
+          <h2 className="text-lg font-semibold">팀 관리</h2>
           <TeamManagementTab
             team={team}
             inviteLink={inviteLink}
@@ -70,7 +70,7 @@ export function TeamDetailPage() {
           />
         </section>
       ) : (
-        <Tabs className="gap-8 pt-4" value={tab} onValueChange={handleTabChange}>
+        <Tabs className="gap-7 pt-1" value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger className="w-full" value={TEAM_TAB.RESTAURANTS}>식당</TabsTrigger>
             <TabsTrigger className="w-full" value={TEAM_TAB.VOTE}>

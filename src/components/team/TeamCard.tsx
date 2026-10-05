@@ -18,7 +18,7 @@ export function TeamCard({ team, onOpen }: TeamCardProps) {
       tabIndex={0}
       onClick={() => onOpen(id)}
       onKeyDown={(event) => event.key === 'Enter' && onOpen(id)}
-      className="cursor-pointer transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring"
+      className="cursor-pointer rounded-md transition-colors hover:border-primary/40 hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-ring"
     >
       <CardHeader>
         <div className="flex items-start justify-between gap-2">

@@ -18,7 +18,7 @@ export function ReviewItem({ review, isOwn, isDeleting, onEdit, onDelete }: Revi
   const { id, authorNickname, rating, content, createdAt } = review
 
   return (
-    <li className="space-y-1.5 rounded-lg border bg-card p-4">
+    <li className="space-y-1.5 px-1 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium">{authorNickname}{isOwn && ' (나)'}</span>

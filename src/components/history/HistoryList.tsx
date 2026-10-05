@@ -10,7 +10,7 @@ type HistoryListProps = {
 
 export function HistoryList({ entries }: HistoryListProps) {
   return (
-    <ul className="divide-y rounded-xl border bg-card">
+    <ul className="divide-y border-y bg-card">
       {entries.map(({ decisionId, sessionId, confirmedAt, restaurant, confirmationType, confirmedByNickname }) => (
         <li key={decisionId} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div className="space-y-0.5">

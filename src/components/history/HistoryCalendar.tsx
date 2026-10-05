@@ -37,7 +37,7 @@ export function HistoryCalendar({ period, referenceDate, entries, onOpenVote }: 
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="overflow-x-auto rounded-xl border bg-card">
+      <div className="overflow-x-auto rounded-md border bg-card">
         <div className="min-w-[700px]">
           <div className="grid grid-cols-7 border-b bg-muted/40">
             {WEEKDAY_LABELS.map((label, index) => (

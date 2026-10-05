@@ -33,7 +33,7 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
   const hasMorePastSessions = pastSessions.length > DEFAULT_CLOSED_VOTE_COUNT
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">점심 투표</h2>
         <CreateVoteButton isCreating={isCreating} onCreate={createVote} />
@@ -43,7 +43,7 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
         {activeSessions.length === 0 ? (
           <EmptyState icon={Vote} title="진행 중인 투표가 없어요" />
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {activeSessions.map(({ id }) => (
               <ActiveVoteSession
                 key={id}
@@ -62,7 +62,7 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold">마감된 투표 <span className="text-muted-foreground">{pastSessions.length}</span></h3>
-              <p className="mt-1 text-sm text-muted-foreground">최종 결과를 확인하거나 확정 대기 중인 투표를 처리하세요.</p>
+              <p className="mt-1 text-sm text-muted-foreground">결과와 확정 상태를 확인합니다.</p>
             </div>
             {hasMorePastSessions && (
               <Button variant="ghost" size="sm" onClick={() => setShowAllClosedVotes((value) => !value)}>
