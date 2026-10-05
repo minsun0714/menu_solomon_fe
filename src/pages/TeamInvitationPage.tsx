@@ -1,7 +1,6 @@
 import { Users } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorState } from '@/components/common/ErrorState'
 import { BackLink } from '@/components/common/BackLink'
@@ -27,32 +26,32 @@ export function TeamInvitationPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <BackLink to={ROUTES.LANDING}>홈으로 가기</BackLink>
-      <Card>
-      <CardHeader className="items-center text-center">
-        <p className="text-sm text-primary">팀에 초대받았어요</p>
-        <CardTitle className="text-2xl">{name}</CardTitle>
-        <p className="text-sm text-muted-foreground">{description}</p>
-        <div className="flex items-center gap-3 pt-2">
-          <MemberAvatarGroup members={members} />
-          <span className="flex items-center gap-1 text-sm text-muted-foreground"><Users className="size-4" />멤버 {memberCount}명</span>
+      <section className="border-y py-6">
+        <header className="border-b pb-5">
+          <p className="text-sm font-medium text-primary">팀 초대</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{name}</h1>
+          <p className="text-sm text-muted-foreground">{description}</p>
+          <div className="flex items-center gap-3 pt-2">
+            <MemberAvatarGroup members={members} />
+            <span className="flex items-center gap-1 text-sm text-muted-foreground"><Users className="size-4" />멤버 {memberCount}명</span>
+          </div>
+        </header>
+        <div className="space-y-5 pt-5">
+          <ul className="divide-y border-y">
+            {members.map(({ id, user, role }) => (
+              <li key={id} className="flex items-center justify-between px-4 py-2.5">
+                <span className="flex items-center gap-3 text-sm"><UserAvatar user={user} />{user.nickname}</span>
+                <span className="text-xs text-muted-foreground">{role === TEAM_ROLE.ADMIN ? TEAM_ROLE_LABEL[role] : TEAM_ROLE_LABEL.MEMBER}</span>
+              </li>
+            ))}
+          </ul>
+          {isAlreadyMember ? (
+            <Button className="w-full" onClick={handleOpenTeam}>이미 참여 중이에요 · 팀으로 이동</Button>
+          ) : (
+            <Button className="w-full" disabled={isJoining} onClick={handleJoin}>{isJoining ? '참여 중...' : '팀 참여하기'}</Button>
+          )}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <ul className="divide-y rounded-lg border">
-          {members.map(({ id, user, role }) => (
-            <li key={id} className="flex items-center justify-between px-4 py-2.5">
-              <span className="flex items-center gap-3 text-sm"><UserAvatar user={user} />{user.nickname}</span>
-              <span className="text-xs text-muted-foreground">{role === TEAM_ROLE.ADMIN ? TEAM_ROLE_LABEL[role] : TEAM_ROLE_LABEL.MEMBER}</span>
-            </li>
-          ))}
-        </ul>
-        {isAlreadyMember ? (
-          <Button className="w-full" onClick={handleOpenTeam}>이미 참여 중이에요 · 팀으로 이동</Button>
-        ) : (
-          <Button className="w-full" disabled={isJoining} onClick={handleJoin}>{isJoining ? '참여 중...' : '팀 참여하기'}</Button>
-        )}
-      </CardContent>
-      </Card>
+      </section>
     </div>
   )
 }

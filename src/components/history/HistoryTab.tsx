@@ -25,7 +25,7 @@ export function HistoryTab({ teamId }: { teamId: string }) {
   return (
     <div className="space-y-6">
       {!isVotesLoading && !isVotesError && unresolvedSessions.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <div className="flex flex-wrap items-center gap-2 border-l-2 border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-800">
           <AlertCircle className="size-4" />
           <span className="font-medium">확정 대기 {unresolvedSessions.length}건</span>
           {unresolvedSessions.map(({ id }) => (

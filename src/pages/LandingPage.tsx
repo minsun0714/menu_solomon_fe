@@ -1,10 +1,9 @@
-import { Plus, UtensilsCrossed } from 'lucide-react'
+import { UtensilsCrossed } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '@/components/common/ErrorState'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { CreateTeamDialog } from '@/components/team/CreateTeamDialog'
 import { TeamCardList } from '@/components/team/TeamCardList'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { APP_NAME } from '@/constants/config'
 import { ROUTES } from '@/constants/routes'
 import { useMyTeams } from '@/hooks/team/useMyTeams'
@@ -20,47 +19,29 @@ export function LandingPage() {
     })
   const handleOpenTeam = (teamId: string) => navigate(ROUTES.TEAM_DETAIL(teamId))
 
-  const cardClassName = 'group min-h-80 gap-0 overflow-hidden p-0 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md'
-  const cardHeaderClassName = 'flex-1 gap-5 px-6 pt-7 pb-6'
-  const cardContentClassName = 'mt-auto px-6 pb-8'
-  const iconClassName = 'flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/10 transition-transform group-hover:scale-105'
-
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-9 py-10">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex items-center justify-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <UtensilsCrossed className="size-6" />
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight">{APP_NAME}</h1>
+    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-3xl flex-col gap-10 py-8 sm:py-14">
+      <header className="border-b pb-6">
+        <div className="flex items-center gap-2.5">
+          <UtensilsCrossed className="size-6 text-primary" />
+          <h1 className="text-2xl font-semibold tracking-tight">{APP_NAME}</h1>
         </div>
-        <p className="text-sm text-muted-foreground">식당을 모으고 함께 투표해 오늘의 점심을 정해보세요.</p>
-      </div>
+        <p className="mt-2 text-sm text-muted-foreground">팀 맛집을 관리하고 오늘 점심을 투표로 정합니다.</p>
+      </header>
 
       {isLoading ? (
         <ListSkeleton count={3} itemClassName="h-44" />
       ) : isError ? (
         <ErrorState onRetry={refetch} />
       ) : teams.length === 0 ? (
-        <div className="mx-auto w-full max-w-md">
-          <Card className={cardClassName}>
-            <CardHeader className={cardHeaderClassName}>
-              <span className={iconClassName}><Plus className="size-6" /></span>
-              <div className="space-y-3">
-                <CardTitle className="text-xl">팀 만들기</CardTitle>
-                <CardDescription className="leading-relaxed">새로운 팀을 만들고 초대 링크를 팀원에게 공유하세요.</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className={cardContentClassName}>
-              <CreateTeamDialog isCreating={isCreating} triggerClassName="h-10 w-full" onCreate={handleCreate} />
-            </CardContent>
-          </Card>
-
+        <div className="flex flex-col items-start gap-4 border-y py-6">
+          <div><h2 className="font-medium">참여 중인 팀이 없습니다.</h2><p className="mt-1 text-sm text-muted-foreground">팀을 만들거나 받은 초대 링크로 참여하세요.</p></div>
+          <CreateTeamDialog isCreating={isCreating} onCreate={handleCreate} />
         </div>
       ) : (
         <div className="space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-medium">참여 중인 팀 <span className="text-primary">{teams.length}</span></p>
+            <h2 className="text-base font-semibold">참여 중인 팀 <span className="ml-1 font-normal text-muted-foreground">{teams.length}</span></h2>
             <div className="flex gap-2">
               <CreateTeamDialog isCreating={isCreating} onCreate={handleCreate} />
             </div>

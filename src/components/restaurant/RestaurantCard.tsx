@@ -32,7 +32,7 @@ export function RestaurantCard({ teamId, item, isDeleting, onDelete }: Restauran
   const { name, category, address } = restaurant
 
   return (
-    <Card className="gap-3">
+    <Card className="gap-3 rounded-md">
       <CardHeader className="flex-row items-start justify-between">
         <CardTitle className="text-base">{name}</CardTitle>
         <div className="flex items-center gap-1">
@@ -66,7 +66,7 @@ export function RestaurantCard({ teamId, item, isDeleting, onDelete }: Restauran
             trigger={
               <button
                 type="button"
-                className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 rounded-lg border bg-muted/40 p-3 text-left transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+                className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 border-t pt-3 text-left transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
               >
                 <MessageSquare className="mt-0.5 size-4 shrink-0" />
                 <span className="min-w-0 flex-1">

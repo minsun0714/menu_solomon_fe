@@ -26,7 +26,7 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
   if (isError) return <ErrorState />
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {totalCount > 0 && (
         <RestaurantFilterBar keyword={keyword} category={category} categoryCounts={categoryCounts} sort={sort} onKeywordChange={setKeyword} onCategoryChange={setCategory} onSortChange={setSort} />
       )}
@@ -35,10 +35,10 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
           <EmptyState
             icon={Utensils}
             title={totalCount === 0 ? '등록된 식당이 없어요' : '검색 결과가 없어요'}
-            description={totalCount === 0 ? '팀원들과 함께 갈 맛집을 등록해 보세요.' : '다른 검색어나 카테고리를 선택해 보세요.'}
+            description={totalCount === 0 ? undefined : '다른 검색어나 카테고리를 선택해 보세요.'}
             action={totalCount === 0 ? (
               <AddRestaurantDialog
-                triggerLabel="첫 식당 추가하기"
+                triggerLabel="맛집 등록"
                 registeredKakaoPlaceIds={registeredKakaoPlaceIds}
                 isAdding={isAdding}
                 onAdd={addRestaurant}
@@ -53,7 +53,7 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
               isAdding={isAdding}
               onAdd={addRestaurant}
             />
-            <div className="grid content-start auto-rows-max gap-4 lg:overflow-y-auto">
+            <div className="grid content-start auto-rows-max gap-2 lg:overflow-y-auto">
               {restaurants.map((item) => (
                 <RestaurantCard key={item.id} teamId={teamId} item={item} isDeleting={isDeleting} onDelete={handleDelete} />
               ))}

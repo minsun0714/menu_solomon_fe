@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MapPinned, Plus, RefreshCw, Sparkles, Store } from 'lucide-react'
+import { MapPinned, Plus, RefreshCw, Store } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -50,15 +50,15 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd, ini
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <Button variant="outline" className="w-full" onClick={() => setShowRecommendations((value) => !value)}>
-          <Sparkles /> 오늘의 추천 점심
+          오늘의 추천 점심
         </Button>
         <Button variant="outline" className="w-full" onClick={() => setInternalOpen(true)}><Plus /> 후보 추가</Button>
       </div>
       {showRecommendations && (
-        <Card>
+        <Card className="rounded-md">
           <CardHeader className="flex-row items-start justify-between">
             <div className="space-y-1">
-              <CardTitle className="flex items-center gap-2"><Sparkles className="size-4 text-primary" />오늘의 추천 점심</CardTitle>
+              <CardTitle>오늘의 추천 점심</CardTitle>
               <p className="text-xs text-muted-foreground">불참자 제외 · 평점 반영 · 최근 7일 확정 제외</p>
             </div>
             <Button

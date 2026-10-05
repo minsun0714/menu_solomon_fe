@@ -18,7 +18,7 @@ export function VoteSessionCard({ session, onOpen }: VoteSessionCardProps) {
   const hasVoted = myBallotCandidateIds.length > 0
 
   return (
-    <Card>
+    <Card className="rounded-md">
       <CardHeader className="flex-row items-start justify-between">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2">

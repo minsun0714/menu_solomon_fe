@@ -1,8 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { Check, CheckCircle2, Clock, Pencil, RotateCcw, Trophy, Utensils, X } from 'lucide-react'
+import { Check, Pencil, RotateCcw, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { StatusBadge } from '@/components/common/StatusBadge'
@@ -48,8 +46,8 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
       },
     }))
     .sort((a, b) => b.result.voteCount - a.result.voteCount)
-  const topVoteCount = resultRows[0]?.result.voteCount ?? 0
   const participatingMembers = participants.filter(({ participating }) => participating)
+  const participantCount = isParticipantsLoading || isParticipantsError ? session.participantCount : participatingMembers.length
   const isLoading = isDetailLoading || isCandidatesLoading || isResultsLoading
   const isError = isDetailError || isCandidatesError || isResultsError
   const canManageDecision = session.createdByTeamMemberId === currentMember?.id
@@ -70,10 +68,10 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
   }
 
   return (
-    <Card className={status === VOTE_STATUS.CLOSED ? 'border-amber-300/70' : undefined}>
-      <CardHeader className="flex-row items-start justify-between gap-3">
-        <div className="space-y-1">
-          <CardTitle className="flex flex-wrap items-center gap-2">
+    <article className="border-b border-border/80 py-4 first:border-t">
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 font-semibold">
             {isEditingName ? (
               <form className="flex items-center gap-1" onSubmit={handleNameSubmit}>
                 <Input
@@ -93,16 +91,18 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
             ) : (
               <span className="flex items-center gap-1">
                 {displayName}
-                <Button variant="ghost" size="icon" className="size-8" aria-label="투표 이름 수정" onClick={handleStartNameEdit}>
+                <Button variant="ghost" size="icon" className="size-7" aria-label="투표 이름 수정" onClick={handleStartNameEdit}>
                   <Pencil />
                 </Button>
               </span>
             )}
             <StatusBadge status={status} />
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">{creatorNickname}님이 만든 투표</p>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {creatorNickname} · {formatDate(closesAt, DATE_FORMATS.DATE_TIME)} 마감 · 후보 {candidates.length || session.candidateCount} · 참여 {participantCount}명
+          </p>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           {canManageDecision && hasCandidates && (
             <Button size="sm" variant="outline" onClick={onManageDecision}>
               {status === VOTE_STATUS.CLOSED ? '메뉴 확정' : '확정 메뉴 변경'}
@@ -110,30 +110,10 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
           )}
           <VoteDeleteMenu teamId={teamId} sessionId={id} navigateAfterDelete={false} />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1"><Clock className="size-4" />{formatDate(closesAt, DATE_FORMATS.DATE_TIME)} 마감</span>
-          <span className="flex items-center gap-1"><Utensils className="size-4" />후보 {candidates.length || session.candidateCount}</span>
-        </div>
-
-        {isParticipantsLoading ? (
-          <p className="text-sm text-muted-foreground">참여자 목록을 불러오고 있어요...</p>
-        ) : isParticipantsError ? (
-          <p className="text-sm text-destructive">참여자 목록을 불러오지 못했습니다.</p>
-        ) : (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-medium text-muted-foreground">참여 {participatingMembers.length}명</span>
-            {participatingMembers.length === 0 ? (
-              <span className="text-xs text-muted-foreground">참여자가 없어요.</span>
-            ) : participatingMembers.map(({ id: participantId, nickname }) => (
-              <Badge key={participantId} variant="success">{nickname}</Badge>
-            ))}
-          </div>
-        )}
-
+      </header>
+      <div className="mt-4 space-y-4">
         {!hasCandidates && !isLoading ? (
-          <div className="space-y-3 rounded-lg border border-dashed p-4">
+          <div className="space-y-3 border-l-2 border-border pl-3">
             <div>
               <p className="text-sm font-medium">등록된 후보 없이 종료된 투표입니다.</p>
               <p className="mt-1 text-xs text-muted-foreground">후보를 추가해 다시 시작하거나 이 투표를 삭제할 수 있습니다.</p>
@@ -150,11 +130,12 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
             </div>
           </div>
         ) : status === VOTE_STATUS.CONFIRMED && decidedCandidate ? (
-          <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
-            <CheckCircle2 className="size-4" /> 확정 메뉴: {decidedCandidate.restaurant.name}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground">확정 메뉴</p>
+            <p className="mt-0.5 font-semibold">{decidedCandidate.restaurant.name}</p>
           </div>
         ) : status === VOTE_STATUS.CLOSED ? (
-          <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800">
+          <div className="border-l-2 border-amber-400 pl-3 text-sm font-medium text-amber-800">
             메뉴 확정을 기다리고 있어요. 투표 생성자가 결과를 확인하고 메뉴를 확정할 수 있습니다.
           </div>
         ) : null}
@@ -166,20 +147,19 @@ export function ClosedVoteResultCard({ teamId, session, onManageDecision, onRest
         ) : resultRows.length === 0 ? (
           null
         ) : (
-          <div className="grid gap-3">
+          <div className="grid max-w-2xl gap-3">
             {resultRows.map(({ candidate, result }) => (
-              <div key={candidate.id} className="grid gap-1.5 sm:grid-cols-[minmax(120px,0.7fr)_minmax(180px,1fr)_80px] sm:items-center sm:gap-3">
-                <span className="flex min-w-0 items-center gap-1.5 text-sm font-medium">
-                  {topVoteCount > 0 && result.voteCount === topVoteCount && <Trophy className="size-4 shrink-0 text-amber-500" />}
-                  <span className="truncate">{candidate.restaurant.name}</span>
-                </span>
-                <Progress value={result.percentage} aria-label={`${candidate.restaurant.name} 득표율`} />
-                <span className="text-right text-sm tabular-nums text-muted-foreground">{result.voteCount}표 · {result.percentage}%</span>
+              <div key={candidate.id} className="space-y-1.5">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="truncate font-medium">{candidate.restaurant.name}</span>
+                  <span className="shrink-0 tabular-nums text-muted-foreground">{result.voteCount}표 · {result.percentage}%</span>
+                </div>
+                <Progress className="h-1.5 bg-muted" value={result.percentage} aria-label={`${candidate.restaurant.name} 득표율`} />
               </div>
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   )
 }

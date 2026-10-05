@@ -70,8 +70,8 @@ export function TeamManagementTab({
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Card>
+    <div className="overflow-hidden rounded-lg border bg-card">
+      <Card className="rounded-none border-0 border-b bg-transparent py-5">
         <CardHeader>
           <CardTitle>팀 정보 수정</CardTitle>
           <CardDescription>팀 이름과 소개를 변경합니다.</CardDescription>
@@ -81,15 +81,15 @@ export function TeamManagementTab({
         </CardContent>
       </Card>
 
-      <div className="grid content-start gap-4">
-        <Card>
+      <div className="divide-y">
+        <Card className="rounded-none border-0 bg-transparent py-5">
           <CardHeader>
             <CardTitle>관리자 변경</CardTitle>
             <CardDescription>다른 멤버에게 관리자 권한을 넘깁니다.</CardDescription>
           </CardHeader>
           <CardContent>
             {transferCandidates.length === 0 ? (
-              <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+              <p className="border-l-2 border-border px-3 py-1 text-sm text-muted-foreground">
                 관리자 권한을 넘길 수 있는 다른 팀원이 없습니다.
               </p>
             ) : (
@@ -110,7 +110,7 @@ export function TeamManagementTab({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-none border-0 bg-transparent py-5">
           <CardHeader>
             <CardTitle>초대 링크</CardTitle>
             <CardDescription>현재 초대 링크를 재발급하면 기존 링크는 더 이상 사용할 수 없습니다.</CardDescription>
@@ -126,7 +126,7 @@ export function TeamManagementTab({
           </CardContent>
         </Card>
 
-        <Card className="border-destructive/20">
+        <Card className="rounded-none border-0 bg-transparent py-5">
           <CardHeader>
             <CardTitle>팀 나가기</CardTitle>
             <CardDescription>
@@ -185,7 +185,7 @@ export function TeamManagementTab({
           </CardContent>
         </Card>
 
-        <Card className="border-destructive/30">
+        <Card className="rounded-none border-0 bg-transparent py-5">
           <CardHeader>
             <CardTitle className="text-destructive">팀 삭제</CardTitle>
             <CardDescription>팀과 모든 기록이 영구적으로 삭제됩니다.</CardDescription>

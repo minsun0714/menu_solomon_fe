@@ -52,8 +52,8 @@ export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, 
           </form>
 
           {!submittedKeyword && (
-            <div className="rounded-xl border border-dashed px-4 py-10 text-center">
-              <Search className="mx-auto mb-3 size-8 text-muted-foreground/60" />
+            <div className="border-y px-4 py-6 text-center">
+              <Search className="mx-auto mb-2 size-4 text-muted-foreground" />
               <p className="text-sm font-medium">추가할 식당을 검색해 보세요</p>
               <p className="mt-1 text-xs text-muted-foreground">식당명뿐 아니라 메뉴나 지역으로도 찾을 수 있어요.</p>
             </div>
@@ -72,7 +72,7 @@ export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, 
                 {results.map(({ kakaoPlaceId, name, category, address }) => {
                   const registered = registeredKakaoPlaceIds.includes(kakaoPlaceId)
                   return (
-                    <div key={kakaoPlaceId} className="flex items-center justify-between gap-3 rounded-xl border p-3.5">
+                    <div key={kakaoPlaceId} className="flex items-center justify-between gap-3 rounded-md border p-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="truncate text-sm font-semibold">{name}</p>
