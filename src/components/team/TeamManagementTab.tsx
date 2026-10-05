@@ -48,18 +48,26 @@ export function TeamManagementTab({ team, inviteLink, transferCandidates, isTran
             <CardTitle>관리자 변경</CardTitle>
             <CardDescription>다른 멤버에게 관리자 권한을 넘깁니다.</CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-2">
-            <Select value={nextAdminId} onValueChange={setNextAdminId}>
-              <SelectTrigger className="flex-1" aria-label="새 관리자 선택">
-                <SelectValue placeholder="멤버 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {transferCandidates.map(({ id, user }) => (
-                  <SelectItem key={id} value={id}>{user.nickname}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button disabled={!nextAdminId || isTransferring} onClick={handleTransfer}>변경</Button>
+          <CardContent>
+            {transferCandidates.length === 0 ? (
+              <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+                관리자 권한을 넘길 수 있는 다른 팀원이 없습니다.
+              </p>
+            ) : (
+              <div className="flex gap-2">
+                <Select value={nextAdminId} onValueChange={setNextAdminId}>
+                  <SelectTrigger className="flex-1" aria-label="새 관리자 선택">
+                    <SelectValue placeholder="멤버 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {transferCandidates.map(({ id, user }) => (
+                      <SelectItem key={id} value={id}>{user.nickname}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button disabled={!nextAdminId || isTransferring} onClick={handleTransfer}>변경</Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
