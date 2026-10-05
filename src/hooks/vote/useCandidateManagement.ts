@@ -17,6 +17,7 @@ export function useCandidateManagement(
   sourceTab: CandidateSourceTab = 'TEAM',
 ) {
   const [keyword, setKeyword] = useState('')
+  const [submittedKakaoKeyword, setSubmittedKakaoKeyword] = useState('')
   const [recommendationPage, setRecommendationPage] = useState(0)
   const { data: recommended = [], isLoading: isRecommendedLoading, isFetching: isRecommendedFetching } =
     useRecommendedCandidatesQuery(teamId, sessionId, canAdd && showRecommendations, recommendationPage)
@@ -29,12 +30,13 @@ export function useCandidateManagement(
     RESTAURANT_SORT.RATING_DESC,
     isTeamPickerOpen,
   )
-  const { data: searchPage, isLoading: isSearching } = usePlaceSearchQuery(isKakaoPickerOpen ? keyword : '', 1)
+  const { data: searchPage, isFetching: isSearching } = usePlaceSearchQuery(isKakaoPickerOpen ? submittedKakaoKeyword : '', 1)
   const { mutate, isPending: isAdding } = useAddCandidateMutation(sessionId, teamId)
 
   return {
     keyword,
     setKeyword,
+    submittedKakaoKeyword,
     recommended,
     teamRestaurants: teamRestaurantPage?.restaurants ?? [],
     searchResults: searchPage?.items ?? [],
@@ -43,6 +45,11 @@ export function useCandidateManagement(
     isSearching,
     isTeamRestaurantsLoading,
     isAdding,
+    submitKakaoSearch: () => setSubmittedKakaoKeyword(keyword.trim()),
+    resetSearch: () => {
+      setKeyword('')
+      setSubmittedKakaoKeyword('')
+    },
     refreshRecommendations: () => setRecommendationPage((page) => page + 1),
     addCandidate: (kakaoPlaceId: string, onAdded?: () => void) =>
       mutate({ kakaoPlaceId, source: CANDIDATE_SOURCE.MANUAL }, { onSuccess: onAdded }),

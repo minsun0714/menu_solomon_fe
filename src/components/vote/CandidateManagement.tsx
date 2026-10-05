@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { MapPinned, Plus, RefreshCw, Store } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { MapPinned, Plus, RefreshCw, Search, Store } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -25,8 +25,8 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd, ini
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [sourceTab, setSourceTab] = useState<CandidateSourceTab>('TEAM')
   const {
-    keyword, setKeyword, recommended, teamRestaurants, searchResults, isRecommendedLoading, isRecommendedFetching,
-    isSearching, isTeamRestaurantsLoading, isAdding, refreshRecommendations, addCandidate, addRecommended,
+    keyword, setKeyword, submittedKakaoKeyword, recommended, teamRestaurants, searchResults, isRecommendedLoading, isRecommendedFetching,
+    isSearching, isTeamRestaurantsLoading, isAdding, submitKakaoSearch, resetSearch, refreshRecommendations, addCandidate, addRecommended,
   } = useCandidateManagement(teamId, sessionId, canAdd, showRecommendations, open, sourceTab)
 
   const candidateKakaoPlaceIds = candidates.map(({ restaurant }) => restaurant.kakaoPlaceId)
@@ -34,14 +34,18 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd, ini
   const handleOpenChange = (nextOpen: boolean) => {
     setInternalOpen(nextOpen)
     if (!nextOpen) {
-      setKeyword('')
+      resetSearch()
       setSourceTab('TEAM')
       onPickerClose?.()
     }
   }
   const handleSourceTabChange = (value: string) => {
     setSourceTab(value as CandidateSourceTab)
-    setKeyword('')
+    resetSearch()
+  }
+  const handleKakaoSearch = (event: FormEvent) => {
+    event.preventDefault()
+    submitKakaoSearch()
   }
 
   if (!canAdd) return null
@@ -107,11 +111,24 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd, ini
               <TabsTrigger value="TEAM"><Store /> 팀 식당</TabsTrigger>
               <TabsTrigger value="KAKAO"><MapPinned /> 카카오맵 검색</TabsTrigger>
             </TabsList>
-            <Input
-              placeholder={sourceTab === 'TEAM' ? '팀 식당 이름, 메뉴, 지역으로 검색' : '카카오맵에서 식당 검색'}
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-            />
+            {sourceTab === 'TEAM' ? (
+              <Input
+                placeholder="팀 식당 이름, 메뉴, 지역으로 검색"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+              />
+            ) : (
+              <form className="flex gap-2" onSubmit={handleKakaoSearch}>
+                <Input
+                  placeholder="카카오맵에서 식당 검색"
+                  value={keyword}
+                  onChange={(event) => setKeyword(event.target.value)}
+                />
+                <Button type="submit" className="shrink-0" disabled={!keyword.trim() || isSearching}>
+                  <Search /> 검색
+                </Button>
+              </form>
+            )}
             <TabsContent value="TEAM">
               <div className="grid max-h-80 gap-2 overflow-y-auto">
                 {isTeamRestaurantsLoading ? (
@@ -133,7 +150,7 @@ export function CandidateManagement({ teamId, sessionId, candidates, canAdd, ini
             </TabsContent>
             <TabsContent value="KAKAO">
               <div className="grid max-h-80 gap-2 overflow-y-auto">
-                {!keyword.trim() ? (
+                {!submittedKakaoKeyword ? (
                   <CandidateOptionsEmpty message="추가할 식당을 검색해 보세요." />
                 ) : isSearching ? (
                   <CandidateOptionsLoading />
