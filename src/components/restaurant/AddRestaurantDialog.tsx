@@ -11,9 +11,10 @@ type AddRestaurantDialogProps = {
   isAdding: boolean
   onAdd: (kakaoPlaceId: string, onAdded: () => void) => void
   triggerLabel?: string
+  triggerClassName?: string
 }
 
-export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, triggerLabel = '식당 추가' }: AddRestaurantDialogProps) {
+export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, triggerLabel = '식당 추가', triggerClassName }: AddRestaurantDialogProps) {
   const [open, setOpen] = useState(false)
   const {
     keyword, setKeyword, submittedKeyword, search, reset, results, pagination, page, setPage, isLoading,
@@ -29,7 +30,7 @@ export function AddRestaurantDialog({ registeredKakaoPlaceIds, isAdding, onAdd, 
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}><Plus /> {triggerLabel}</Button>
+      <Button className={triggerClassName} onClick={() => setOpen(true)}><Plus /> {triggerLabel}</Button>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>

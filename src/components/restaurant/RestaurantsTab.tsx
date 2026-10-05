@@ -27,10 +27,7 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <RestaurantFilterBar keyword={keyword} category={category} categoryCounts={categoryCounts} sort={sort} onKeywordChange={setKeyword} onCategoryChange={setCategory} onSortChange={setSort} />
-        <AddRestaurantDialog registeredKakaoPlaceIds={registeredKakaoPlaceIds} isAdding={isAdding} onAdd={addRestaurant} />
-      </div>
+      <RestaurantFilterBar keyword={keyword} category={category} categoryCounts={categoryCounts} sort={sort} onKeywordChange={setKeyword} onCategoryChange={setCategory} onSortChange={setSort} />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(360px,0.85fr)_minmax(480px,1.35fr)]">
         {restaurants.length === 0 ? (
           <EmptyState
@@ -47,10 +44,18 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
             ) : undefined}
           />
         ) : (
-          <div className="grid content-start auto-rows-max gap-4 lg:h-[calc(100vh-4rem)] lg:min-h-[560px] lg:max-h-[720px] lg:overflow-y-auto lg:pr-2">
-            {restaurants.map((item) => (
-              <RestaurantCard key={item.id} teamId={teamId} item={item} isDeleting={isDeleting} onDelete={handleDelete} />
-            ))}
+          <div className="grid gap-3 lg:h-[calc(100vh-4rem)] lg:min-h-[560px] lg:max-h-[720px] lg:grid-rows-[auto_minmax(0,1fr)] lg:pr-2">
+            <AddRestaurantDialog
+              triggerClassName="w-full"
+              registeredKakaoPlaceIds={registeredKakaoPlaceIds}
+              isAdding={isAdding}
+              onAdd={addRestaurant}
+            />
+            <div className="grid content-start auto-rows-max gap-4 lg:overflow-y-auto">
+              {restaurants.map((item) => (
+                <RestaurantCard key={item.id} teamId={teamId} item={item} isDeleting={isDeleting} onDelete={handleDelete} />
+              ))}
+            </div>
           </div>
         )}
         <RestaurantMapPanel restaurants={restaurants} officeLocation={officeLocation} onOfficeLocationChange={handleOfficeLocationChange} />
