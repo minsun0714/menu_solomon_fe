@@ -38,20 +38,22 @@ export function TeamDetailPage() {
   if (isError || !team) return <div className="space-y-6"><BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink><ErrorState message="팀에 접근할 수 없습니다. 초대 링크로 참여해 주세요." /></div>
 
   return (
-    <div className="space-y-7">
-      <BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink>
-      <TeamHeader
-        team={team}
-        members={members}
-        inviteLink={inviteLink}
-        restaurantCount={teamRestaurants?.totalCount}
-        reviewCount={teamRestaurants?.totalReviewCount}
-        isManaging={isManaging}
-        onToggleManagement={isAdmin ? () => setIsManaging((value) => !value) : undefined}
-        canLeave={!isAdmin && canLeave}
-        isLeaving={!isAdmin && isLeaving}
-        onLeave={isMember && !isAdmin ? handleLeave : undefined}
-      />
+    <div className="space-y-5">
+      <header className="space-y-2">
+        <BackLink to={ROUTES.LANDING}>팀 목록으로</BackLink>
+        <TeamHeader
+          team={team}
+          members={members}
+          inviteLink={inviteLink}
+          restaurantCount={teamRestaurants?.totalCount}
+          reviewCount={teamRestaurants?.totalReviewCount}
+          isManaging={isManaging}
+          onToggleManagement={isAdmin ? () => setIsManaging((value) => !value) : undefined}
+          canLeave={!isAdmin && canLeave}
+          isLeaving={!isAdmin && isLeaving}
+          onLeave={isMember && !isAdmin ? handleLeave : undefined}
+        />
+      </header>
       {isManaging && isAdmin ? (
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">팀 관리</h2>
@@ -70,10 +72,10 @@ export function TeamDetailPage() {
           />
         </section>
       ) : (
-        <Tabs className="gap-7 pt-1" value={tab} onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger className="w-full" value={TEAM_TAB.RESTAURANTS}>식당</TabsTrigger>
-            <TabsTrigger className="w-full" value={TEAM_TAB.VOTE}>
+        <Tabs className="gap-5" value={tab} onValueChange={handleTabChange}>
+          <TabsList className="w-fit gap-6">
+            <TabsTrigger className="h-9" value={TEAM_TAB.RESTAURANTS}>식당</TabsTrigger>
+            <TabsTrigger className="h-9" value={TEAM_TAB.VOTE}>
               점심 투표
               {activeVotes.length > 0 && (
                 <Badge variant={unvotedCount > 0 ? 'default' : 'secondary'} className="ml-1 h-5 px-1.5 text-[10px]">
@@ -81,7 +83,7 @@ export function TeamDetailPage() {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger className="w-full" value={TEAM_TAB.HISTORY}>히스토리</TabsTrigger>
+            <TabsTrigger className="h-9" value={TEAM_TAB.HISTORY}>히스토리</TabsTrigger>
           </TabsList>
           <TabsContent value={TEAM_TAB.RESTAURANTS}><RestaurantsTab teamId={teamId} /></TabsContent>
           <TabsContent value={TEAM_TAB.VOTE}><LunchVoteTab teamId={teamId} /></TabsContent>

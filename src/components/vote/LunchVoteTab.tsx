@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Plus, Vote } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { EmptyState } from '@/components/common/EmptyState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { useLunchVotes } from '@/hooks/vote/useLunchVotes'
@@ -33,15 +32,15 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
   const hasMorePastSessions = pastSessions.length > DEFAULT_CLOSED_VOTE_COUNT
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-7">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">점심 투표</h2>
         <CreateVoteButton isCreating={isCreating} onCreate={createVote} />
       </div>
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h3 className="font-semibold">진행 중 <span className="text-muted-foreground">{activeSessions.length}</span></h3>
         {activeSessions.length === 0 ? (
-          <EmptyState icon={Vote} title="진행 중인 투표가 없어요" />
+          <p className="py-2 text-sm text-muted-foreground">진행 중인 투표가 없습니다.</p>
         ) : (
           <div className="grid gap-6">
             {activeSessions.map(({ id }) => (
@@ -58,12 +57,9 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
       </section>
 
       {pastSessions.length > 0 && (
-        <section className="space-y-4 border-t pt-8">
+        <section className="space-y-3 border-t pt-6">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="font-semibold">마감된 투표 <span className="text-muted-foreground">{pastSessions.length}</span></h3>
-              <p className="mt-1 text-sm text-muted-foreground">결과와 확정 상태를 확인합니다.</p>
-            </div>
+            <h3 className="font-semibold">마감된 투표 <span className="text-muted-foreground">{pastSessions.length}</span></h3>
             {hasMorePastSessions && (
               <Button variant="ghost" size="sm" onClick={() => setShowAllClosedVotes((value) => !value)}>
                 {showAllClosedVotes ? <ChevronUp /> : <ChevronDown />}
@@ -71,7 +67,7 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
               </Button>
             )}
           </div>
-          <div className="grid gap-3">
+          <div className="grid">
             {visiblePastSessions.map((session) => (
               <ClosedVoteResultCard
                 key={session.id}
@@ -105,7 +101,7 @@ type CreateVoteButtonProps = {
 function CreateVoteButton({ isCreating, onCreate }: CreateVoteButtonProps) {
   return (
     <CreateVoteDialog
-      trigger={<Button><Plus /> 투표 만들기</Button>}
+      trigger={<Button size="sm"><Plus /> 투표 만들기</Button>}
       isSubmitting={isCreating}
       onSubmit={onCreate}
     />

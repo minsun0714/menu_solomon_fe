@@ -34,7 +34,7 @@ export function InviteTeamDialog({ teamName, inviteLink }: InviteTeamDialogProps
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline"><UserPlus /> 팀원 초대하기</Button>
+        <Button variant="outline" size="sm"><UserPlus /> 팀원 초대하기</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
