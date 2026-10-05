@@ -99,7 +99,7 @@ export function LunchVoteTab({ teamId }: { teamId: string }) {
 
 type CreateVoteButtonProps = {
   isCreating: boolean
-  onCreate: (name: string | undefined, closesAt: string, onDone: () => void) => void
+  onCreate: (name: string | undefined, closesAt: string, onDone: () => void, onError: (error: Error) => void) => void
 }
 
 function CreateVoteButton({ isCreating, onCreate }: CreateVoteButtonProps) {

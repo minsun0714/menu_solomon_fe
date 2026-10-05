@@ -1,6 +1,7 @@
 import { DATE_FORMATS, MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND, WEEKDAY_LABELS, type DateFormat } from '@/constants/date'
 
 const pad = (value: number) => String(value).padStart(2, '0')
+const CLOSING_TIME_LEAD_MS = MS_PER_MINUTE
 
 export function formatDate(iso: string, format: DateFormat = DATE_FORMATS.DATE): string {
   const date = new Date(iso)
@@ -49,6 +50,18 @@ export function toDateTimeLocalValue(iso: string): string {
 
 export function fromDateTimeLocalValue(value: string): string {
   return new Date(value).toISOString()
+}
+
+export function getMinimumClosingTime(now: number = Date.now()): number {
+  return Math.ceil((now + CLOSING_TIME_LEAD_MS) / MS_PER_MINUTE) * MS_PER_MINUTE
+}
+
+export function getMinimumClosingTimeLocalValue(now: number = Date.now()): string {
+  return toDateTimeLocalValue(new Date(getMinimumClosingTime(now)).toISOString())
+}
+
+export function isValidClosingTime(value: string, now: number = Date.now()): boolean {
+  return value !== '' && new Date(value).getTime() >= now + CLOSING_TIME_LEAD_MS
 }
 
 export function startOfWeek(date: Date): Date {

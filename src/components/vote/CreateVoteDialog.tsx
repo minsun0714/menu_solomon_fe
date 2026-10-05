@@ -5,34 +5,47 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DEFAULT_VOTE_DURATION_HOURS, MAX_VOTE_NAME_LENGTH } from '@/constants/vote'
 import { addHoursToNow } from '@/domain/voteRules'
-import { fromDateTimeLocalValue, toDateTimeLocalValue } from '@/lib/date'
+import { getFieldError } from '@/lib/api'
+import { getMinimumClosingTimeLocalValue, isValidClosingTime, toDateTimeLocalValue } from '@/lib/date'
+
+const CLOSING_TIME_ERROR = '마감 시간은 현재 시각보다 최소 1분 이후로 설정해 주세요.'
 
 type CreateVoteDialogProps = {
   trigger: ReactNode
   isSubmitting: boolean
-  onSubmit: (name: string | undefined, closesAt: string, onDone: () => void) => void
+  onSubmit: (name: string | undefined, closesAt: string, onDone: () => void, onError: (error: Error) => void) => void
 }
 
 export function CreateVoteDialog({ trigger, isSubmitting, onSubmit }: CreateVoteDialogProps) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [closesAt, setClosesAt] = useState(() => toDateTimeLocalValue(addHoursToNow()))
-  const [validationNow, setValidationNow] = useState(0)
+  const [minimumClosesAt, setMinimumClosesAt] = useState(() => getMinimumClosingTimeLocalValue())
+  const [closesAtError, setClosesAtError] = useState<string | null>(null)
   const trimmedName = name.trim()
-  const isFuture = closesAt !== '' && new Date(closesAt).getTime() > validationNow
-  const isValid = isFuture
+  const isValid = closesAt !== '' && !closesAtError
 
   const handleOpenChange = (next: boolean) => {
     if (next) {
       setName('')
       setClosesAt(toDateTimeLocalValue(addHoursToNow()))
-      setValidationNow(Date.now())
+      setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+      setClosesAtError(null)
     }
     setOpen(next)
   }
   const handleSubmit = () => {
-    if (!isValid) return
-    onSubmit(trimmedName || undefined, fromDateTimeLocalValue(closesAt), () => setOpen(false))
+    if (!isValidClosingTime(closesAt)) {
+      setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+      setClosesAtError(CLOSING_TIME_ERROR)
+      return
+    }
+    onSubmit(
+      trimmedName || undefined,
+      new Date(closesAt).toISOString(),
+      () => setOpen(false),
+      (error) => setClosesAtError(getFieldError(error, 'closesAt') ?? error.message),
+    )
   }
 
   return (
@@ -59,13 +72,15 @@ export function CreateVoteDialog({ trigger, isSubmitting, onSubmit }: CreateVote
             <Input
               id="vote-closes-at"
               type="datetime-local"
+              min={minimumClosesAt}
               value={closesAt}
               onChange={(event) => {
                 setClosesAt(event.target.value)
-                setValidationNow(Date.now())
+                setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+                setClosesAtError(null)
               }}
             />
-            {!isFuture && <p className="text-xs text-destructive">현재 시간 이후로 설정해 주세요.</p>}
+            {closesAtError && <p className="text-xs text-destructive">{closesAtError}</p>}
           </div>
         </div>
         <DialogFooter>
