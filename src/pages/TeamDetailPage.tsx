@@ -48,13 +48,9 @@ export function TeamDetailPage() {
         reviewCount={teamRestaurants?.totalReviewCount}
         isManaging={isManaging}
         onToggleManagement={isAdmin ? () => setIsManaging((value) => !value) : undefined}
-        canLeave={canLeave}
-        requiresAdminTransfer={requiresAdminTransfer}
-        transferCandidates={transferCandidates}
-        deletesTeamOnLeave={isAdmin && members.length === 1}
-        isLeaving={isLeaving}
-        onLeave={isMember ? handleLeave : undefined}
-        onTransferAndLeave={isMember ? handleTransferAndLeave : undefined}
+        canLeave={!isAdmin && canLeave}
+        isLeaving={!isAdmin && isLeaving}
+        onLeave={isMember && !isAdmin ? handleLeave : undefined}
       />
       {isManaging && isAdmin ? (
         <section className="space-y-4">
@@ -65,6 +61,12 @@ export function TeamDetailPage() {
             transferCandidates={transferCandidates}
             isTransferring={isTransferring}
             onTransferAdmin={transferAdmin}
+            canLeave={canLeave}
+            requiresAdminTransfer={requiresAdminTransfer}
+            deletesTeamOnLeave={members.length === 1}
+            isLeaving={isLeaving}
+            onLeave={handleLeave}
+            onTransferAndLeave={handleTransferAndLeave}
           />
         </section>
       ) : (

@@ -41,6 +41,10 @@ export const voteService = {
     return api.delete(votePath(teamId, sessionId))
   },
 
+  closeVote(teamId: string, sessionId: string): Promise<LunchVoteSession> {
+    return api.post<LunchVoteSession>(`${votePath(teamId, sessionId)}/close`)
+  },
+
   getParticipants(teamId: string, sessionId: string): Promise<ParticipantDetail[]> {
     return api.get<ParticipantDetail[]>(`${votePath(teamId, sessionId)}/participants`)
   },

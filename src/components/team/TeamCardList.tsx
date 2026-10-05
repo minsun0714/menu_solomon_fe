@@ -8,7 +8,7 @@ type TeamCardListProps = {
 
 export function TeamCardList({ teams, onOpenTeam }: TeamCardListProps) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4">
       {teams.map((team) => (
         <TeamCard key={team.id} team={team} onOpen={onOpenTeam} />
       ))}

@@ -3,7 +3,10 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { fromDateTimeLocalValue, toDateTimeLocalValue } from '@/lib/date'
+import { getFieldError } from '@/lib/api'
+import { getMinimumClosingTimeLocalValue, isValidClosingTime, toDateTimeLocalValue } from '@/lib/date'
+
+const CLOSING_TIME_ERROR = '마감 시간은 현재 시각보다 최소 1분 이후로 설정해 주세요.'
 
 const resolve = (value: string | (() => string)) => (typeof value === 'function' ? value() : value)
 
@@ -14,7 +17,7 @@ type ClosingTimeDialogProps = {
   submitLabel: string
   initialClosesAt: string | (() => string)
   isSubmitting: boolean
-  onSubmit: (closesAt: string, onDone: () => void) => void
+  onSubmit: (closesAt: string, onDone: () => void, onError: (error: Error) => void) => void
 }
 
 export function ClosingTimeDialog({
@@ -28,15 +31,29 @@ export function ClosingTimeDialog({
 }: ClosingTimeDialogProps) {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(() => toDateTimeLocalValue(resolve(initialClosesAt)))
-  const isValid = value !== '' && new Date(value).getTime() > Date.now()
+  const [minimumClosesAt, setMinimumClosesAt] = useState(() => getMinimumClosingTimeLocalValue())
+  const [closesAtError, setClosesAtError] = useState<string | null>(null)
+  const isValid = value !== '' && !closesAtError
 
   const handleOpenChange = (next: boolean) => {
-    if (next) setValue(toDateTimeLocalValue(resolve(initialClosesAt)))
+    if (next) {
+      setValue(toDateTimeLocalValue(resolve(initialClosesAt)))
+      setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+      setClosesAtError(null)
+    }
     setOpen(next)
   }
   const handleSubmit = () => {
-    if (new Date(value).getTime() <= Date.now()) return
-    onSubmit(fromDateTimeLocalValue(value), () => setOpen(false))
+    if (!isValidClosingTime(value)) {
+      setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+      setClosesAtError(CLOSING_TIME_ERROR)
+      return
+    }
+    onSubmit(
+      new Date(value).toISOString(),
+      () => setOpen(false),
+      (error) => setClosesAtError(getFieldError(error, 'closesAt') ?? error.message),
+    )
   }
 
   return (
@@ -52,8 +69,18 @@ export function ClosingTimeDialog({
           </DialogHeader>
           <div className="grid gap-2">
             <Label htmlFor="closes-at">마감 시간</Label>
-            <Input id="closes-at" type="datetime-local" value={value} onChange={(e) => setValue(e.target.value)} />
-            {!isValid && <p className="text-xs text-destructive">현재 시간 이후로 설정해 주세요.</p>}
+            <Input
+              id="closes-at"
+              type="datetime-local"
+              min={minimumClosesAt}
+              value={value}
+              onChange={(event) => {
+                setValue(event.target.value)
+                setMinimumClosesAt(getMinimumClosingTimeLocalValue())
+                setClosesAtError(null)
+              }}
+            />
+            {closesAtError && <p className="text-xs text-destructive">{closesAtError}</p>}
           </div>
           <DialogFooter>
             <Button disabled={!isValid || isSubmitting} onClick={handleSubmit}>

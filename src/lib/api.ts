@@ -26,6 +26,10 @@ export class ApiError extends Error {
   }
 }
 
+export function getFieldError(error: Error, field: string): string | undefined {
+  return error instanceof ApiError ? error.problem.fieldErrors?.[field] : undefined
+}
+
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   query?: Record<string, string | number | boolean | null | undefined>;

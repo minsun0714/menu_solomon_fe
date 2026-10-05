@@ -1,6 +1,7 @@
-import { UserCheck, UserX } from 'lucide-react'
+import { MousePointerClick, UserCheck, UserX } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/cn'
 import type { ParticipantDetail } from '@/types/vote'
 
@@ -49,17 +50,22 @@ function NameBadges({
           </Badge>
         )
 
+        const actionLabel = `${nickname}님을 ${nextParticipating ? '참여' : '불참'}으로 변경`
+
         return isEditable ? (
-          <button
-            key={id}
-            type="button"
-            disabled={isUpdating}
-            aria-label={`${nickname}님 ${nextParticipating ? '참여 처리' : '불참 처리'}`}
-            title={nextParticipating ? '참여 처리' : '불참 처리'}
-            onClick={() => onSetParticipation?.(teamMemberId, nextParticipating)}
-          >
-            {badge}
-          </button>
+          <Tooltip key={id}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                disabled={isUpdating}
+                aria-label={actionLabel}
+                onClick={() => onSetParticipation?.(teamMemberId, nextParticipating)}
+              >
+                {badge}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{actionLabel}</TooltipContent>
+          </Tooltip>
         ) : <span key={id}>{badge}</span>
       })}
     </div>
@@ -79,6 +85,11 @@ export function ParticipationSummary({
   return (
     <Card className={cn(compact && 'gap-3 py-3 shadow-none')}>
       <CardContent className={cn('grid gap-4 sm:grid-cols-2', compact && 'gap-2 px-3')}>
+        {canToggle && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground sm:col-span-2">
+            <MousePointerClick className="size-3.5" /> 팀원 뱃지를 눌러 참여 여부를 변경할 수 있어요.
+          </p>
+        )}
         <div className="space-y-2">
           <p className={cn('text-sm font-medium', compact && 'text-xs')}>참여 {participants.length}명</p>
           <NameBadges members={participants} emptyText="참여자가 없어요" canManage={canManageParticipants} canToggle={canToggle} currentMemberId={currentMemberId} isUpdating={isUpdating} nextParticipating={false} onSetParticipation={onSetParticipation} />

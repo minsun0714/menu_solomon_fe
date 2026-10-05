@@ -27,7 +27,9 @@ export function RestaurantsTab({ teamId }: { teamId: string }) {
 
   return (
     <div className="space-y-4">
-      <RestaurantFilterBar keyword={keyword} category={category} categoryCounts={categoryCounts} sort={sort} onKeywordChange={setKeyword} onCategoryChange={setCategory} onSortChange={setSort} />
+      {totalCount > 0 && (
+        <RestaurantFilterBar keyword={keyword} category={category} categoryCounts={categoryCounts} sort={sort} onKeywordChange={setKeyword} onCategoryChange={setCategory} onSortChange={setSort} />
+      )}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(360px,0.85fr)_minmax(480px,1.35fr)]">
         {restaurants.length === 0 ? (
           <EmptyState

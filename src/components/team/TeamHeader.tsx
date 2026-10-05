@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { InviteTeamDialog } from './InviteTeamDialog'
 import { MemberAvatarGroup } from './MemberAvatarGroup'
 import { DIALOG_MESSAGES } from '@/constants/messages'
@@ -27,12 +26,8 @@ type TeamHeaderProps = {
   isManaging?: boolean
   onToggleManagement?: () => void
   canLeave?: boolean
-  requiresAdminTransfer?: boolean
-  transferCandidates?: TeamMemberProfile[]
-  deletesTeamOnLeave?: boolean
   isLeaving?: boolean
   onLeave?: () => void
-  onTransferAndLeave?: (memberId: string) => void
 }
 
 export function TeamHeader({
@@ -44,24 +39,11 @@ export function TeamHeader({
   isManaging = false,
   onToggleManagement,
   canLeave = false,
-  requiresAdminTransfer = false,
-  transferCandidates = [],
-  deletesTeamOnLeave = false,
   isLeaving = false,
   onLeave,
-  onTransferAndLeave,
 }: TeamHeaderProps) {
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false)
-  const [nextAdminId, setNextAdminId] = useState('')
   const { name, description } = team
-  const handleLeaveDialogChange = (open: boolean) => {
-    setLeaveDialogOpen(open)
-    if (!open) setNextAdminId('')
-  }
-  const handleLeave = () => {
-    if (requiresAdminTransfer) onTransferAndLeave?.(nextAdminId)
-    else onLeave?.()
-  }
 
   return (
     <section className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-xs md:flex-row md:items-start md:justify-between">
@@ -118,43 +100,20 @@ export function TeamHeader({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <AlertDialog open={leaveDialogOpen} onOpenChange={handleLeaveDialogChange}>
+            <AlertDialog open={leaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    {requiresAdminTransfer ? '관리자를 위임하고 팀에서 나갈까요?' : DIALOG_MESSAGES.LEAVE_TEAM.title}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {requiresAdminTransfer
-                      ? '팀을 계속 관리할 멤버를 선택하세요. 관리자 권한을 넘긴 뒤 팀에서 나가게 됩니다.'
-                      : deletesTeamOnLeave
-                        ? '마지막 멤버가 탈퇴하면 이 팀과 모든 기록이 즉시 삭제됩니다.'
-                        : DIALOG_MESSAGES.LEAVE_TEAM.description}
-                  </AlertDialogDescription>
+                  <AlertDialogTitle>{DIALOG_MESSAGES.LEAVE_TEAM.title}</AlertDialogTitle>
+                  <AlertDialogDescription>{DIALOG_MESSAGES.LEAVE_TEAM.description}</AlertDialogDescription>
                 </AlertDialogHeader>
-                {requiresAdminTransfer && (
-                  <div className="grid gap-2 py-2">
-                    <label htmlFor="leave-next-admin" className="text-sm font-medium">새 관리자</label>
-                    <Select value={nextAdminId} onValueChange={setNextAdminId}>
-                      <SelectTrigger id="leave-next-admin" className="w-full">
-                        <SelectValue placeholder="권한을 위임할 멤버 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {transferCandidates.map(({ id, user }) => (
-                          <SelectItem key={id} value={id}>{user.nickname}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
                 <AlertDialogFooter>
                   <AlertDialogCancel>취소</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive text-white hover:bg-destructive/90"
-                    disabled={isLeaving || (requiresAdminTransfer && !nextAdminId)}
-                    onClick={handleLeave}
+                    disabled={isLeaving}
+                    onClick={onLeave}
                   >
-                    {isLeaving ? '처리 중...' : requiresAdminTransfer ? '위임 후 팀 나가기' : DIALOG_MESSAGES.LEAVE_TEAM.action}
+                    {isLeaving ? '처리 중...' : DIALOG_MESSAGES.LEAVE_TEAM.action}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
